@@ -41,11 +41,7 @@ npm --version
 
 ### Instalasi
 
-express => npm i express
-pg => npm i pg
-typescript (dev) => npm i -D typescript
-buat project node.js => npm init
-buat tsconfig.json => npx tsc --init
+express => npm i express|pg => npm i pg|typescript (dev) => npm i -D typescript|create project node.js => npm init|create tsconfig.json => npx tsc --init
 
 ## Kontak
 
