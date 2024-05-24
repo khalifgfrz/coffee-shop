@@ -6,12 +6,8 @@ export interface IproductQuery {
   product_name?: string;
   price?: number;
   category?: string;
-  sortName?: "alphabet";
-  latest?: "latest";
-  oldest?: "oldest";
-  sortPrice?: "cheapest";
-  limit?: number;
-  offset?: number;
+  sortBy?: "product_name" | "price" | "latest" | "oldest";
+  page?: "1" | "2" | "3";
 }
 
 export interface IproductBody {
