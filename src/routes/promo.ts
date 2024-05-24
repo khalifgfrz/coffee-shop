@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { createNewPromo, deleteExtPromo, getDetailPromo, getPromo, updatedPromo } from "../handlers/promo";
+import { createNewPromo, deleteExtPromo, getDetailPromo, getPromo, updateDetailPromo, updatePromo } from "../handlers/promo";
 
 const promoRouter = Router();
 
@@ -13,6 +13,8 @@ promoRouter.post("/", createNewPromo);
 // Menghapus Promo
 promoRouter.delete("/:uuid", deleteExtPromo);
 // Mengupdate Promo
-promoRouter.put("/:uuid", updatedPromo);
+promoRouter.put("/:uuid", updatePromo);
+
+promoRouter.patch("/:uuid", updateDetailPromo);
 
 export default promoRouter;

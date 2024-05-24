@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { createNewProduct, deleteExtProduct, getDetailProduct, getProduct, updatedProduct } from "../handlers/product";
+import { createNewProduct, deleteExtProduct, getDetailProduct, getProduct, updateDetailProduct, updateProduct } from "../handlers/product";
 
 const productRouter = Router();
 
@@ -14,6 +14,8 @@ productRouter.post("/", createNewProduct);
 // Menghapus Produk
 productRouter.delete("/:uuid", deleteExtProduct);
 // Mengupdate Produk
-productRouter.put("/:uuid", updatedProduct);
+productRouter.put("/:uuid", updateProduct);
+
+productRouter.patch("/:uuid", updateDetailProduct);
 
 export default productRouter;

@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { createNewUser, getDetailUser, getUser, deleteExtUser, updatedUser } from "../handlers/user";
+import { createNewUser, getDetailUser, getUser, deleteExtUser, updateDetailUser, updateUser } from "../handlers/user";
 
 const userRouter = Router();
 
@@ -13,6 +13,8 @@ userRouter.post("/", createNewUser);
 // Menghapus User
 userRouter.delete("/:uuid", deleteExtUser);
 // Mengupdate User
-userRouter.put("/:uuid", updatedUser);
+userRouter.put("/:uuid", updateUser);
+
+userRouter.patch("/:uuid", updateDetailUser);
 
 export default userRouter;
