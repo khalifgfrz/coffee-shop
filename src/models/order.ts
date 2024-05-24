@@ -3,8 +3,7 @@ export interface IorderParams {
 }
 
 export interface IorderQuery {
-  limit?: number;
-  offset?: number;
+  page?: "1" | "2" | "3";
 }
 
 export interface IorderBody {
