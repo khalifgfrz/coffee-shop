@@ -12,6 +12,6 @@ orderRouter.post("/", createNewOrder);
 // Menghapus Produk
 orderRouter.delete("/:no_order", deleteExtOrder);
 // Mengupdate Produk
-orderRouter.put("/:no_order", updatedOrder);
+orderRouter.patch("/:no_order", updatedOrder);
 
 export default orderRouter;
