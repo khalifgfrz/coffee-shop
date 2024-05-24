@@ -5,55 +5,49 @@ import { IdataProduct, IproductBody, IproductParams, IproductQuery } from "../mo
 
 export const getAllProduct = (que: IproductQuery): Promise<QueryResult<IdataProduct>> => {
   let query = `select * from product`;
-  const { product_name, price, category, sortName, latest, oldest, sortPrice, limit, offset } = que;
+  const { product_name, price, category, sortBy, page } = que;
   const values = [];
+  let condition = false;
+
   if (product_name) {
     query += " where product_name ilike $1";
     values.push(`%${product_name}%`);
-    if (price) {
-      query += " and price > $2";
-      values.push(`${price}`);
-      if (category) {
-        query += " and category = $3";
-        values.push(`${category}`);
-      }
-    } else if (category) {
-      query += " and category = $2";
-      values.push(`${category}`);
-    }
-  } else if (price) {
-    query += " where price > $1";
+    condition = true;
+  }
+  if (price) {
+    query += condition ? " and price > $2" : " where price > $1";
     values.push(`${price}`);
-    if (category) {
-      query += " and category = $2";
-      values.push(`${category}`);
-    }
-  } else if (category) {
-    query += " where category = $1";
+    condition = true;
+  }
+  if (category) {
+    query += condition ? " and category = $2" : " where category = $1";
     values.push(`${category}`);
+    condition = true;
   }
-  if (sortName) {
-    query += " order by product_name asc";
+  switch (sortBy) {
+    case "product_name":
+      query += " order by product_name asc";
+      break;
+    case "price":
+      query += " order by price asc";
+      break;
+    case "latest":
+      query += " order by created_at desc";
+      break;
+    case "oldest":
+      query += " order by created_at asc";
+      break;
   }
-  if (oldest) {
-    query += " order by updated_at asc, created_at asc";
-  }
-  if (latest) {
-    query += " order by updated_at desc,created_at desc";
-  }
-  if (sortPrice) {
-    query += " order by price asc";
-  }
-  if (limit) {
-    query += " limit $1";
-    values.push(`${limit}`);
-    if (offset) {
-      query += " offset $2";
-      values.push(`${offset}`);
-    }
-  } else if (offset) {
-    query += " offset $1";
-    values.push(`${offset}`);
+  switch (page) {
+    case "1":
+      query += " limit 10 offset 0";
+      break;
+    case "2":
+      query += " limit 10 offset 10";
+      break;
+    case "3":
+      query += " limit 10 offset 20";
+      break;
   }
   return db.query(query, values);
 };
@@ -67,24 +61,68 @@ export const getOneProduct = (params: IproductParams): Promise<QueryResult<Idata
 
 export const createProduct = (body: IproductBody): Promise<QueryResult<IdataProduct>> => {
   const query = `insert into product (product_name, price, category, description, product_size, method, stock) values ($1,$2,$3,$4,$5,$6,$7)
-    returning *`;
+  returning product_name, price, category, description, product_size, method, stock`;
   const { product_name, price, category, description, product_size, method, stock } = body;
   const values = [product_name, price, category, description, product_size, method, stock];
   return db.query(query, values);
 };
 
 export const deleteProduct = (params: IproductParams): Promise<QueryResult<IdataProduct>> => {
-  const query = `delete from product where uuid=$1`;
+  const query = `delete from product where uuid=$1
+  returning product_name, price, category, description, product_size, method, stock`;
   const { uuid } = params;
   const values = [uuid];
   return db.query(query, values);
 };
 
-export const updateProduct = (params: IproductParams, body: IproductBody): Promise<QueryResult<IdataProduct>> => {
+export const updateAllProduct = (params: IproductParams, body: IproductBody): Promise<QueryResult<IdataProduct>> => {
   const query = `update product set product_name = $1, price = $2, category = $3, description = $4, product_size = $5, method = $6, stock = $7, updated_at = now() where uuid = $8
-    returning *`;
+  returning product_name, price, category, description, product_size, method, stock`;
   const { product_name, price, category, description, product_size, method, stock } = body;
   const { uuid } = params;
   const values = [product_name, price, category, description, product_size, method, stock, uuid];
+  return db.query(query, values);
+};
+
+export const updateOneProduct = (params: IproductParams, body: IproductBody): Promise<QueryResult<IdataProduct>> => {
+  let query = `update product set`;
+  const { product_name, price, category, description, product_size, method, stock } = body;
+  const { uuid } = params;
+  const values = [];
+  if (product_name) {
+    query += ` product_name = $1, updated_at = now() where uuid = $2
+    returning product_name, price, category, description, product_size, method, stock`;
+    values.push(`${product_name}`, `${uuid}`);
+  }
+  if (price) {
+    query += ` price = $1, updated_at = now() where uuid = $2
+    returning product_name, price, category, description, product_size, method, stock`;
+    values.push(`${price}`, `${uuid}`);
+  }
+  if (category) {
+    query += ` category = $1, updated_at = now() where uuid = $2
+    returning product_name, price, category, description, product_size, method, stock`;
+    values.push(`${category}`, `${uuid}`);
+  }
+  if (description) {
+    query += ` description = $1, updated_at = now() where uuid = $2
+    returning product_name, price, category, description, product_size, method, stock`;
+    values.push(`${description}`, `${uuid}`);
+  }
+  if (product_size) {
+    query += ` product_size = $1, updated_at = now() where uuid = $2
+    returning product_name, price, category, description, product_size, method, stock`;
+    values.push(`${product_size}`, `${uuid}`);
+  }
+  if (method) {
+    query += ` method = $1, updated_at = now() where uuid = $2
+    returning product_name, price, category, description, product_size, method, stock`;
+    values.push(`${method}`, `${uuid}`);
+  }
+  if (stock) {
+    query += ` stock = $1, updated_at = now() where uuid = $2
+    returning product_name, price, category, description, product_size, method, stock`;
+    values.push(`${stock}`, `${uuid}`);
+  }
   return db.query(query, values);
 };
