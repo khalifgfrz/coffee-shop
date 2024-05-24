@@ -45,7 +45,7 @@ export const deleteUser = (params: IuserParams): Promise<QueryResult<IdataUser>>
 
 export const updateAllUser = (params: IuserParams, body: IuserBody): Promise<QueryResult<IdataUser>> => {
   const query = `update "user" set full_name = $1, phone = $2, address = $3, email = $4, "password" = $5, "role" = $6, updated_at = now() where uuid = $7
-    returning *`;
+    returning returning full_name, phone, address, email, role`;
   const { full_name, phone, address, email, password, role } = body;
   const { uuid } = params;
   const values = [full_name, phone, address, email, password, role, uuid];
