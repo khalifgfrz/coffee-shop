@@ -1,13 +1,13 @@
 import { Request, Response } from "express-serve-static-core";
 
-import { getAllUser, getOneUser, createUser, deleteUser, updateUser } from "../repositories/user";
+import { getAllUser, getOneUser, createUser, deleteUser, updateOneUser, updateAllUser } from "../repositories/user";
 
 import { IuserBody, IuserParams, IuserQuery } from "../models/user";
 
 export const getUser = async (req: Request<{}, {}, {}, IuserQuery>, res: Response) => {
   try {
     const result = await getAllUser(req.query);
-    if (result.rows.length === 0) {
+    if (result.rowCount === 0) {
       return res.status(404).json({
         msg: "Produk tidak ditemukan",
         data: [],
@@ -94,9 +94,33 @@ export const deleteExtUser = async (req: Request<IuserParams>, res: Response) =>
   }
 };
 
-export const updatedUser = async (req: Request<IuserParams, {}, IuserBody>, res: Response) => {
+export const updateUser = async (req: Request<IuserParams, {}, IuserBody>, res: Response) => {
   try {
-    const result = await updateUser(req.params, req.body);
+    const result = await updateAllUser(req.params, req.body);
+    if (result.rowCount === 0) {
+      return res.status(404).json({
+        msg: "Produk tidak ditemukan",
+        data: [],
+      });
+    }
+    return res.status(201).json({
+      message: "success",
+      data: result.rows,
+    });
+  } catch (err) {
+    if (err) {
+      console.log((err as Error).message);
+    }
+    return res.status(500).json({
+      msg: "Error",
+      err: "Internal Server Error",
+    });
+  }
+};
+
+export const updateDetailUser = async (req: Request<IuserParams, {}, IuserBody>, res: Response) => {
+  try {
+    const result = await updateOneUser(req.params, req.body);
     if (result.rowCount === 0) {
       return res.status(404).json({
         msg: "Produk tidak ditemukan",

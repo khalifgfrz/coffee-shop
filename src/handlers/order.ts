@@ -6,6 +6,12 @@ import { IorderParams, IorderBody, IorderQuery } from "../models/order";
 export const getOrder = async (req: Request<{}, {}, {}, IorderQuery>, res: Response) => {
   try {
     const result = await getAllOrder(req.query);
+    if (result.rowCount === 0) {
+      return res.status(404).json({
+        msg: "Produk tidak ditemukan",
+        data: [],
+      });
+    }
     return res.status(200).json({
       msg: "Success",
       data: result.rows,
@@ -25,7 +31,6 @@ export const getDetailOrder = async (req: Request<IorderParams>, res: Response) 
   const { no_order } = req.params;
   try {
     const result = await getOneOrder(no_order);
-    // console.log(result);
     if (result.rowCount === 0) {
       return res.status(404).json({
         msg: "Produk tidak ditemukan",
@@ -50,7 +55,6 @@ export const getDetailOrder = async (req: Request<IorderParams>, res: Response) 
 export const createNewOrder = async (req: Request<{}, {}, IorderBody>, res: Response) => {
   try {
     const result = await createOrder(req.body);
-    console.log(result);
     return res.status(201).json({
       message: "success",
       data: result.rows,
@@ -78,7 +82,7 @@ export const deleteExtOrder = async (req: Request<IorderParams>, res: Response) 
     }
     return res.status(200).json({
       msg: "Success",
-      data: result,
+      data: result.rows,
     });
   } catch (err) {
     if (err) {
