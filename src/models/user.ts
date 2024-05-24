@@ -3,8 +3,7 @@ export interface IuserParams {
 }
 
 export interface IuserQuery {
-  limit?: number;
-  offset?: number;
+  page?: "1" | "2" | "3";
 }
 
 export interface IuserBody {
