@@ -28,10 +28,18 @@ export const getOneUser = (params: IuserParams): Promise<QueryResult<IdataUser>>
 };
 
 export const createUser = (body: IuserBody): Promise<QueryResult<IdataUser>> => {
-  const query = `insert into "user" (full_name, phone, address, email, "password", "role") values ($1,$2,$3,$4,$5,$6)
+  const query = `insert into "user" (full_name, phone, address, email, "role") values ($1,$2,$3,$4,$5,$6)
   returning full_name, phone, address, email, "role"`;
-  const { full_name, phone, address, email, password, role } = body;
-  const values = [full_name, phone, address, email, password, role];
+  const { full_name, phone, address, email, role } = body;
+  const values = [full_name, phone, address, email, role];
+  return db.query(query, values);
+};
+
+export const registerUser = (body: IuserBody, hashedPassword: string): Promise<QueryResult<IdataUser>> => {
+  const query = `insert into "user" (full_name, phone, address, email, "role", pwd) values ($1,$2,$3,$4,$5,$6)
+  returning full_name, phone, address, email, "role"`;
+  const { full_name, phone, address, email, role } = body;
+  const values = [full_name, phone, address, email, role, hashedPassword];
   return db.query(query, values);
 };
 
@@ -44,17 +52,17 @@ export const deleteUser = (params: IuserParams): Promise<QueryResult<IdataUser>>
 };
 
 export const updateAllUser = (params: IuserParams, body: IuserBody): Promise<QueryResult<IdataUser>> => {
-  const query = `update "user" set full_name = $1, phone = $2, address = $3, email = $4, "password" = $5, "role" = $6, updated_at = now() where uuid = $7
+  const query = `update "user" set full_name = $1, phone = $2, address = $3, email = $4, "role" = $5, updated_at = now() where uuid = $6
     returning returning full_name, phone, address, email, role`;
-  const { full_name, phone, address, email, password, role } = body;
+  const { full_name, phone, address, email, role } = body;
   const { uuid } = params;
-  const values = [full_name, phone, address, email, password, role, uuid];
+  const values = [full_name, phone, address, email, role, uuid];
   return db.query(query, values);
 };
 
 export const updateOneUser = (params: IuserParams, body: IuserBody): Promise<QueryResult<IdataUser>> => {
   let query = `update "user" set`;
-  const { full_name, phone, address, email, password, role } = body;
+  const { full_name, phone, address, email, role } = body;
   const { uuid } = params;
   const values = [];
   if (full_name) {
@@ -76,11 +84,6 @@ export const updateOneUser = (params: IuserParams, body: IuserBody): Promise<Que
     query += ` email = $1, updated_at = now() where uuid = $2
     returning full_name, phone, address, email, role`;
     values.push(`${email}`, `${uuid}`);
-  }
-  if (password) {
-    query += ` "password" = $1, updated_at = now() where uuid = $2
-    returning full_name, phone, address, email, role`;
-    values.push(`${password}`, `${uuid}`);
   }
   if (role) {
     query += ` "role" = $1, updated_at = now() where uuid = $2

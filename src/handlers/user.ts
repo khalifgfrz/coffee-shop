@@ -1,15 +1,16 @@
 import { Request, Response } from "express-serve-static-core";
+import bcrypt from "bcrypt";
 
-import { getAllUser, getOneUser, createUser, deleteUser, updateOneUser, updateAllUser } from "../repositories/user";
+import { getAllUser, getOneUser, createUser, deleteUser, updateOneUser, updateAllUser, registerUser } from "../repositories/user";
 
-import { IuserBody, IuserParams, IuserQuery } from "../models/user";
+import { IuserBody, IuserParams, IuserQuery, IuserResgisterBody } from "../models/user";
 
 export const getUser = async (req: Request<{}, {}, {}, IuserQuery>, res: Response) => {
   try {
     const result = await getAllUser(req.query);
     if (result.rowCount === 0) {
       return res.status(404).json({
-        msg: "Produk tidak ditemukan",
+        msg: "User tidak ditemukan",
         data: [],
       });
     }
@@ -18,8 +19,8 @@ export const getUser = async (req: Request<{}, {}, {}, IuserQuery>, res: Respons
       data: result.rows,
     });
   } catch (err) {
-    if (err) {
-      console.log((err as Error).message);
+    if (err instanceof Error) {
+      console.log(err.message);
     }
     return res.status(500).json({
       msg: "Error",
@@ -42,8 +43,8 @@ export const getDetailUser = async (req: Request<IuserParams>, res: Response) =>
       data: result.rows,
     });
   } catch (err) {
-    if (err) {
-      console.log((err as Error).message);
+    if (err instanceof Error) {
+      console.log(err.message);
     }
     return res.status(500).json({
       msg: "Error",
@@ -60,8 +61,8 @@ export const createNewUser = async (req: Request<{}, {}, IuserBody>, res: Respon
       data: result.rows,
     });
   } catch (err) {
-    if (err) {
-      console.log((err as Error).message);
+    if (err instanceof Error) {
+      console.log(err.message);
     }
     return res.status(500).json({
       msg: "Error",
@@ -75,7 +76,7 @@ export const deleteExtUser = async (req: Request<IuserParams>, res: Response) =>
     const result = await deleteUser(req.params);
     if (result.rowCount === 0) {
       return res.status(404).json({
-        msg: "Produk tidak ditemukan",
+        msg: "User tidak ditemukan",
         data: [],
       });
     }
@@ -84,8 +85,31 @@ export const deleteExtUser = async (req: Request<IuserParams>, res: Response) =>
       data: result,
     });
   } catch (err) {
-    if (err) {
-      console.log((err as Error).message);
+    if (err instanceof Error) {
+      console.log(err.message);
+    }
+    return res.status(500).json({
+      msg: "Error",
+      err: "Internal Server Error",
+    });
+  }
+};
+
+export const registerNewUser = async (req: Request<{}, {}, IuserResgisterBody>, res: Response) => {
+  const { pwd } = req.body;
+  try {
+    // membuat hashed password
+    const salt = await bcrypt.genSalt();
+    const hashed = await bcrypt.hash(pwd, salt);
+    // menyimpan kedalam db
+    const result = await registerUser(req.body, hashed);
+    return res.status(201).json({
+      msg: "Success",
+      data: result.rows,
+    });
+  } catch (err) {
+    if (err instanceof Error) {
+      console.log(err.message);
     }
     return res.status(500).json({
       msg: "Error",
@@ -99,7 +123,7 @@ export const updateUser = async (req: Request<IuserParams, {}, IuserBody>, res: 
     const result = await updateAllUser(req.params, req.body);
     if (result.rowCount === 0) {
       return res.status(404).json({
-        msg: "Produk tidak ditemukan",
+        msg: "User tidak ditemukan",
         data: [],
       });
     }
@@ -108,8 +132,8 @@ export const updateUser = async (req: Request<IuserParams, {}, IuserBody>, res: 
       data: result.rows,
     });
   } catch (err) {
-    if (err) {
-      console.log((err as Error).message);
+    if (err instanceof Error) {
+      console.log(err.message);
     }
     return res.status(500).json({
       msg: "Error",
@@ -123,7 +147,7 @@ export const updateDetailUser = async (req: Request<IuserParams, {}, IuserBody>,
     const result = await updateOneUser(req.params, req.body);
     if (result.rowCount === 0) {
       return res.status(404).json({
-        msg: "Produk tidak ditemukan",
+        msg: "User tidak ditemukan",
         data: [],
       });
     }
@@ -132,8 +156,8 @@ export const updateDetailUser = async (req: Request<IuserParams, {}, IuserBody>,
       data: result.rows,
     });
   } catch (err) {
-    if (err) {
-      console.log((err as Error).message);
+    if (err instanceof Error) {
+      console.log(err.message);
     }
     return res.status(500).json({
       msg: "Error",

@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { createNewUser, getDetailUser, getUser, deleteExtUser, updateDetailUser, updateUser } from "../handlers/user";
+import { createNewUser, getDetailUser, getUser, deleteExtUser, updateDetailUser, updateUser, registerNewUser } from "../handlers/user";
 
 const userRouter = Router();
 
@@ -10,6 +10,8 @@ userRouter.get("/:uuid", getDetailUser);
 
 // Menambah User Baru
 userRouter.post("/", createNewUser);
+// Register Akun User
+userRouter.post("/new", registerNewUser);
 // Menghapus User
 userRouter.delete("/:uuid", deleteExtUser);
 // Mengupdate User

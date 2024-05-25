@@ -11,7 +11,6 @@ export interface IuserBody {
   phone: string;
   address: string;
   email: string;
-  password: string;
   role: string;
 }
 
@@ -20,4 +19,8 @@ export interface IdataUser extends IuserBody {
   uuid: string;
   created_at: string;
   updated_at: string | null;
+}
+
+export interface IuserResgisterBody extends IuserBody {
+  pwd: string;
 }
