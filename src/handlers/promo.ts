@@ -32,7 +32,7 @@ export const getDetailPromo = async (req: Request<IpromoParams>, res: Response) 
     const result = await getOnePromo(req.params);
     if (result.rowCount === 0) {
       return res.status(404).json({
-        msg: "Produk tidak ditemukan",
+        msg: "Promo tidak ditemukan",
         data: [],
       });
     }
@@ -74,7 +74,7 @@ export const deleteExtPromo = async (req: Request<IpromoParams>, res: Response) 
     const result = await deletePromo(req.params);
     if (result.rowCount === 0) {
       return res.status(404).json({
-        msg: "Produk tidak ditemukan",
+        msg: "Promo tidak ditemukan",
         data: [],
       });
     }
@@ -98,7 +98,7 @@ export const updatePromo = async (req: Request<IpromoParams, {}, IpromoBody>, re
     const result = await updateAllPromo(req.params, req.body);
     if (result.rowCount === 0) {
       return res.status(404).json({
-        msg: "Produk tidak ditemukan",
+        msg: "Promo tidak ditemukan",
         data: [],
       });
     }
@@ -122,7 +122,7 @@ export const updateDetailPromo = async (req: Request<IpromoParams, {}, IpromoBod
     const result = await updateOnePromo(req.params, req.body);
     if (result.rowCount === 0) {
       return res.status(404).json({
-        msg: "Produk tidak ditemukan",
+        msg: "Promo tidak ditemukan",
         data: [],
       });
     }
