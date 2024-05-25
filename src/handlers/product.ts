@@ -17,8 +17,8 @@ export const getProduct = async (req: Request<{}, {}, {}, IproductQuery>, res: R
       data: result.rows,
     });
   } catch (err) {
-    if (err) {
-      console.log((err as Error).message);
+    if (err instanceof Error) {
+      console.log(err.message);
     }
     return res.status(500).json({
       msg: "Error",
@@ -41,8 +41,8 @@ export const getDetailProduct = async (req: Request<IproductParams>, res: Respon
       data: result.rows,
     });
   } catch (err) {
-    if (err) {
-      console.log((err as Error).message);
+    if (err instanceof Error) {
+      console.log(err.message);
     }
     return res.status(500).json({
       msg: "Error",
@@ -59,8 +59,8 @@ export const createNewProduct = async (req: Request<{}, {}, IproductBody>, res: 
       data: result.rows,
     });
   } catch (err) {
-    if (err) {
-      console.log((err as Error).message);
+    if (err instanceof Error) {
+      console.log(err.message);
     }
     return res.status(500).json({
       msg: "Error",
@@ -83,8 +83,8 @@ export const deleteExtProduct = async (req: Request<IproductParams>, res: Respon
       data: result.rows,
     });
   } catch (err) {
-    if (err) {
-      console.log((err as Error).message);
+    if (err instanceof Error) {
+      console.log(err.message);
     }
     return res.status(500).json({
       msg: "Error",
@@ -107,8 +107,8 @@ export const updateProduct = async (req: Request<IproductParams, {}, IproductBod
       data: result.rows,
     });
   } catch (err) {
-    if (err) {
-      console.log((err as Error).message);
+    if (err instanceof Error) {
+      console.log(err.message);
     }
     return res.status(500).json({
       msg: "Error",
@@ -131,8 +131,8 @@ export const updateDetailProduct = async (req: Request<IproductParams, {}, Iprod
       data: result.rows,
     });
   } catch (err) {
-    if (err) {
-      console.log((err as Error).message);
+    if (err instanceof Error) {
+      console.log(err.message);
     }
     return res.status(500).json({
       msg: "Error",

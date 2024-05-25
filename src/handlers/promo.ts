@@ -17,8 +17,8 @@ export const getPromo = async (req: Request, res: Response) => {
       data: result.rows,
     });
   } catch (err) {
-    if (err) {
-      console.log((err as Error).message);
+    if (err instanceof Error) {
+      console.log(err.message);
     }
     return res.status(500).json({
       msg: "Error",
@@ -41,8 +41,8 @@ export const getDetailPromo = async (req: Request<IpromoParams>, res: Response) 
       data: result.rows,
     });
   } catch (err) {
-    if (err) {
-      console.log((err as Error).message);
+    if (err instanceof Error) {
+      console.log(err.message);
     }
     return res.status(500).json({
       msg: "Error",
@@ -59,8 +59,8 @@ export const createNewPromo = async (req: Request<{}, {}, IpromoBody>, res: Resp
       data: result.rows,
     });
   } catch (err) {
-    if (err) {
-      console.log((err as Error).message);
+    if (err instanceof Error) {
+      console.log(err.message);
     }
     return res.status(500).json({
       msg: "Error",
@@ -83,8 +83,8 @@ export const deleteExtPromo = async (req: Request<IpromoParams>, res: Response) 
       data: result,
     });
   } catch (err) {
-    if (err) {
-      console.log((err as Error).message);
+    if (err instanceof Error) {
+      console.log(err.message);
     }
     return res.status(500).json({
       msg: "Error",
@@ -107,8 +107,8 @@ export const updatePromo = async (req: Request<IpromoParams, {}, IpromoBody>, re
       data: result.rows,
     });
   } catch (err) {
-    if (err) {
-      console.log((err as Error).message);
+    if (err instanceof Error) {
+      console.log(err.message);
     }
     return res.status(500).json({
       msg: "Error",
@@ -131,8 +131,8 @@ export const updateDetailPromo = async (req: Request<IpromoParams, {}, IpromoBod
       data: result.rows,
     });
   } catch (err) {
-    if (err) {
-      console.log((err as Error).message);
+    if (err instanceof Error) {
+      console.log(err.message);
     }
     return res.status(500).json({
       msg: "Error",

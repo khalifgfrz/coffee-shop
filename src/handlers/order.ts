@@ -8,7 +8,7 @@ export const getOrder = async (req: Request<{}, {}, {}, IorderQuery>, res: Respo
     const result = await getAllOrder(req.query);
     if (result.rowCount === 0) {
       return res.status(404).json({
-        msg: "Produk tidak ditemukan",
+        msg: "Pesanan tidak ditemukan",
         data: [],
       });
     }
@@ -17,8 +17,8 @@ export const getOrder = async (req: Request<{}, {}, {}, IorderQuery>, res: Respo
       data: result.rows,
     });
   } catch (err) {
-    if (err) {
-      console.log((err as Error).message);
+    if (err instanceof Error) {
+      console.log(err.message);
     }
     return res.status(500).json({
       msg: "Error",
@@ -33,7 +33,7 @@ export const getDetailOrder = async (req: Request<IorderParams>, res: Response) 
     const result = await getOneOrder(no_order);
     if (result.rowCount === 0) {
       return res.status(404).json({
-        msg: "Produk tidak ditemukan",
+        msg: "Pesanan tidak ditemukan",
         data: [],
       });
     }
@@ -42,8 +42,8 @@ export const getDetailOrder = async (req: Request<IorderParams>, res: Response) 
       data: result.rows,
     });
   } catch (err) {
-    if (err) {
-      console.log((err as Error).message);
+    if (err instanceof Error) {
+      console.log(err.message);
     }
     return res.status(500).json({
       msg: "Error",
@@ -60,8 +60,8 @@ export const createNewOrder = async (req: Request<{}, {}, IorderBody>, res: Resp
       data: result.rows,
     });
   } catch (err) {
-    if (err) {
-      console.log((err as Error).message);
+    if (err instanceof Error) {
+      console.log(err.message);
     }
     return res.status(500).json({
       msg: "Error",
@@ -76,7 +76,7 @@ export const deleteExtOrder = async (req: Request<IorderParams>, res: Response) 
     const result = await deleteOrder(no_order);
     if (result.rowCount === 0) {
       return res.status(404).json({
-        msg: "Produk tidak ditemukan",
+        msg: "Pesanan tidak ditemukan",
         data: [],
       });
     }
@@ -85,8 +85,8 @@ export const deleteExtOrder = async (req: Request<IorderParams>, res: Response) 
       data: result.rows,
     });
   } catch (err) {
-    if (err) {
-      console.log((err as Error).message);
+    if (err instanceof Error) {
+      console.log(err.message);
     }
     return res.status(500).json({
       msg: "Error",
@@ -101,7 +101,7 @@ export const updatedOrder = async (req: Request<IorderParams, {}, IorderBody>, r
     const result = await updateOrder(no_order, req.body);
     if (result.rowCount === 0) {
       return res.status(404).json({
-        msg: "Produk tidak ditemukan",
+        msg: "Pesanan tidak ditemukan",
         data: [],
       });
     }
@@ -110,8 +110,8 @@ export const updatedOrder = async (req: Request<IorderParams, {}, IorderBody>, r
       data: result.rows,
     });
   } catch (err) {
-    if (err) {
-      console.log((err as Error).message);
+    if (err instanceof Error) {
+      console.log(err.message);
     }
     return res.status(500).json({
       msg: "Error",
