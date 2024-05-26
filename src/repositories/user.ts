@@ -43,6 +43,12 @@ export const registerUser = (body: IuserBody, hashedPassword: string): Promise<Q
   return db.query(query, values);
 };
 
+export const getPwdUser = (uuid: string): Promise<QueryResult<{ full_name: string; pwd: string }>> => {
+  const query = `select full_name, pwd from "user" where uuid = $1`;
+  const values = [uuid];
+  return db.query(query, values);
+};
+
 export const deleteUser = (params: IuserParams): Promise<QueryResult<IdataUser>> => {
   const query = `delete from "user" where uuid=$1
   returning full_name, phone, address, email, "role"`;

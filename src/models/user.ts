@@ -24,3 +24,8 @@ export interface IdataUser extends IuserBody {
 export interface IuserResgisterBody extends IuserBody {
   pwd: string;
 }
+
+export interface IuserLoginBody {
+  uuid: string;
+  pwd: string;
+}
