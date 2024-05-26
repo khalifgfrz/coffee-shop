@@ -1,9 +1,9 @@
 import { Request, Response } from "express-serve-static-core";
 
 import { createOrder, deleteOrder, getAllOrder, getOneOrder, updateOrder } from "../repositories/order";
-import { IorderParams, IorderBody, IorderQuery } from "../models/order";
+import { IOrderParams, IOrderBody, IOrderQuery } from "../models/order";
 
-export const getOrder = async (req: Request<{}, {}, {}, IorderQuery>, res: Response) => {
+export const getOrder = async (req: Request<{}, {}, {}, IOrderQuery>, res: Response) => {
   try {
     const result = await getAllOrder(req.query);
     if (result.rowCount === 0) {
@@ -27,7 +27,7 @@ export const getOrder = async (req: Request<{}, {}, {}, IorderQuery>, res: Respo
   }
 };
 
-export const getDetailOrder = async (req: Request<IorderParams>, res: Response) => {
+export const getDetailOrder = async (req: Request<IOrderParams>, res: Response) => {
   const { no_order } = req.params;
   try {
     const result = await getOneOrder(no_order);
@@ -52,11 +52,11 @@ export const getDetailOrder = async (req: Request<IorderParams>, res: Response) 
   }
 };
 
-export const createNewOrder = async (req: Request<{}, {}, IorderBody>, res: Response) => {
+export const createNewOrder = async (req: Request<{}, {}, IOrderBody>, res: Response) => {
   try {
     const result = await createOrder(req.body);
     return res.status(201).json({
-      message: "success",
+      msg: "success",
       data: result.rows,
     });
   } catch (err) {
@@ -70,7 +70,7 @@ export const createNewOrder = async (req: Request<{}, {}, IorderBody>, res: Resp
   }
 };
 
-export const deleteExtOrder = async (req: Request<IorderParams>, res: Response) => {
+export const deleteExtOrder = async (req: Request<IOrderParams>, res: Response) => {
   const { no_order } = req.params;
   try {
     const result = await deleteOrder(no_order);
@@ -95,7 +95,7 @@ export const deleteExtOrder = async (req: Request<IorderParams>, res: Response) 
   }
 };
 
-export const updatedOrder = async (req: Request<IorderParams, {}, IorderBody>, res: Response) => {
+export const updatedOrder = async (req: Request<IOrderParams, {}, IOrderBody>, res: Response) => {
   try {
     const { no_order } = req.params;
     const result = await updateOrder(no_order, req.body);
@@ -106,7 +106,7 @@ export const updatedOrder = async (req: Request<IorderParams, {}, IorderBody>, r
       });
     }
     return res.status(201).json({
-      message: "success",
+      msg: "success",
       data: result.rows,
     });
   } catch (err) {

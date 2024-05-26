@@ -1,10 +1,10 @@
 import { QueryResult } from "pg";
 
 import db from "../configs/pg";
-import { IdataProduct, IproductBody, IproductParams, IproductQuery } from "../models/product";
+import { IDataProduct, IProductBody, IProductParams, IProductQuery } from "../models/product";
 
-export const getAllProduct = (que: IproductQuery): Promise<QueryResult<IdataProduct>> => {
-  let query = `select * from product`;
+export const getAllProduct = (que: IProductQuery): Promise<QueryResult<IDataProduct>> => {
+  let query = `select uuid, product_name, price, category, description, product_size, method, stock from product`;
   const { product_name, price, category, sortBy, page } = que;
   const values = [];
   let condition = false;
@@ -52,14 +52,14 @@ export const getAllProduct = (que: IproductQuery): Promise<QueryResult<IdataProd
   return db.query(query, values);
 };
 
-export const getOneProduct = (params: IproductParams): Promise<QueryResult<IdataProduct>> => {
-  const query = `select * from product where uuid=$1`;
+export const getOneProduct = (params: IProductParams): Promise<QueryResult<IDataProduct>> => {
+  const query = `select uuid, product_name, price, category, description, product_size, method, stock from product where uuid=$1`;
   const { uuid } = params;
   const values = [uuid];
   return db.query(query, values);
 };
 
-export const createProduct = (body: IproductBody): Promise<QueryResult<IdataProduct>> => {
+export const createProduct = (body: IProductBody): Promise<QueryResult<IDataProduct>> => {
   const query = `insert into product (product_name, price, category, description, product_size, method, stock) values ($1,$2,$3,$4,$5,$6,$7)
   returning product_name, price, category, description, product_size, method, stock`;
   const { product_name, price, category, description, product_size, method, stock } = body;
@@ -67,7 +67,7 @@ export const createProduct = (body: IproductBody): Promise<QueryResult<IdataProd
   return db.query(query, values);
 };
 
-export const deleteProduct = (params: IproductParams): Promise<QueryResult<IdataProduct>> => {
+export const deleteProduct = (params: IProductParams): Promise<QueryResult<IDataProduct>> => {
   const query = `delete from product where uuid=$1
   returning product_name, price, category, description, product_size, method, stock`;
   const { uuid } = params;
@@ -75,7 +75,7 @@ export const deleteProduct = (params: IproductParams): Promise<QueryResult<Idata
   return db.query(query, values);
 };
 
-export const updateAllProduct = (params: IproductParams, body: IproductBody): Promise<QueryResult<IdataProduct>> => {
+export const updateAllProduct = (params: IProductParams, body: IProductBody): Promise<QueryResult<IDataProduct>> => {
   const query = `update product set product_name = $1, price = $2, category = $3, description = $4, product_size = $5, method = $6, stock = $7, updated_at = now() where uuid = $8
   returning product_name, price, category, description, product_size, method, stock`;
   const { product_name, price, category, description, product_size, method, stock } = body;
@@ -84,7 +84,7 @@ export const updateAllProduct = (params: IproductParams, body: IproductBody): Pr
   return db.query(query, values);
 };
 
-export const updateOneProduct = (params: IproductParams, body: IproductBody): Promise<QueryResult<IdataProduct>> => {
+export const updateOneProduct = (params: IProductParams, body: IProductBody): Promise<QueryResult<IDataProduct>> => {
   let query = `update product set`;
   const { product_name, price, category, description, product_size, method, stock } = body;
   const { uuid } = params;

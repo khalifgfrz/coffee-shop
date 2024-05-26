@@ -1,11 +1,12 @@
 import { Router } from "express";
 import { createNewUser, getDetailUser, getUser, deleteExtUser, updateDetailUser, updateUser, registerNewUser, loginUser } from "../handlers/user";
+import { authorization } from "../middlewares/authorization";
 
 const userRouter = Router();
 
 // CRUD
 userRouter.get("/", getUser);
-userRouter.get("/:uuid", getDetailUser);
+userRouter.get("/:uuid", authorization(), getDetailUser);
 
 // Menambah User Baru
 userRouter.post("/", createNewUser);

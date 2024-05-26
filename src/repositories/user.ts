@@ -1,10 +1,10 @@
 import { QueryResult } from "pg";
 
 import db from "../configs/pg";
-import { IdataUser, IuserBody, IuserParams, IuserQuery } from "../models/user";
+import { IDataUser, IUserBody, IUserParams, IUserQuery } from "../models/user";
 
-export const getAllUser = (que: IuserQuery): Promise<QueryResult<IdataUser>> => {
-  let query = `select * from "user"`;
+export const getAllUser = (que: IUserQuery): Promise<QueryResult<IDataUser>> => {
+  let query = `select uuid, full_name, phone, address, email, role, created_at, updated_at from "user"`;
   const { page } = que;
   switch (page) {
     case "1":
@@ -20,22 +20,21 @@ export const getAllUser = (que: IuserQuery): Promise<QueryResult<IdataUser>> => 
   return db.query(query);
 };
 
-export const getOneUser = (params: IuserParams): Promise<QueryResult<IdataUser>> => {
-  const query = `select * from "user" where uuid=$1`;
-  const { uuid } = params;
+export const getOneUser = (uuid: string): Promise<QueryResult<IDataUser>> => {
+  const query = `select uuid, full_name, phone, address, email, role, created_at, updated_at from "user" where uuid=$1`;
   const values = [uuid];
   return db.query(query, values);
 };
 
-export const createUser = (body: IuserBody): Promise<QueryResult<IdataUser>> => {
+export const createUser = (body: IUserBody): Promise<QueryResult<IDataUser>> => {
   const query = `insert into "user" (full_name, phone, address, email, "role") values ($1,$2,$3,$4,$5,$6)
-  returning full_name, phone, address, email, "role"`;
+  returning full_name, phone, address, email, role, created_at, updated_at, "role"`;
   const { full_name, phone, address, email, role } = body;
   const values = [full_name, phone, address, email, role];
   return db.query(query, values);
 };
 
-export const registerUser = (body: IuserBody, hashedPassword: string): Promise<QueryResult<IdataUser>> => {
+export const registerUser = (body: IUserBody, hashedPassword: string): Promise<QueryResult<IDataUser>> => {
   const query = `insert into "user" (full_name, phone, address, email, "role", pwd) values ($1,$2,$3,$4,$5,$6)
   returning full_name, phone, address, email, "role"`;
   const { full_name, phone, address, email, role } = body;
@@ -49,7 +48,7 @@ export const getPwdUser = (uuid: string): Promise<QueryResult<{ full_name: strin
   return db.query(query, values);
 };
 
-export const deleteUser = (params: IuserParams): Promise<QueryResult<IdataUser>> => {
+export const deleteUser = (params: IUserParams): Promise<QueryResult<IDataUser>> => {
   const query = `delete from "user" where uuid=$1
   returning full_name, phone, address, email, "role"`;
   const { uuid } = params;
@@ -57,16 +56,16 @@ export const deleteUser = (params: IuserParams): Promise<QueryResult<IdataUser>>
   return db.query(query, values);
 };
 
-export const updateAllUser = (params: IuserParams, body: IuserBody): Promise<QueryResult<IdataUser>> => {
+export const updateAllUser = (params: IUserParams, body: IUserBody): Promise<QueryResult<IDataUser>> => {
   const query = `update "user" set full_name = $1, phone = $2, address = $3, email = $4, "role" = $5, updated_at = now() where uuid = $6
-    returning returning full_name, phone, address, email, role`;
+    returning full_name, phone, address, email, role`;
   const { full_name, phone, address, email, role } = body;
   const { uuid } = params;
   const values = [full_name, phone, address, email, role, uuid];
   return db.query(query, values);
 };
 
-export const updateOneUser = (params: IuserParams, body: IuserBody): Promise<QueryResult<IdataUser>> => {
+export const updateOneUser = (params: IUserParams, body: IUserBody): Promise<QueryResult<IDataUser>> => {
   let query = `update "user" set`;
   const { full_name, phone, address, email, role } = body;
   const { uuid } = params;

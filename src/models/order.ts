@@ -1,19 +1,19 @@
-export interface IorderParams {
+export interface IOrderParams {
   no_order: string;
 }
 
-export interface IorderQuery {
+export interface IOrderQuery {
   page?: "1" | "2" | "3";
 }
 
-export interface IorderBody {
+export interface IOrderBody {
   product_id: number;
   promo_id: number;
   user_id: number;
   status: string;
 }
 
-export interface IdataOrder extends IorderBody {
+export interface IDataOrder extends IOrderBody {
   id: number;
   no_order: string;
   date: string;

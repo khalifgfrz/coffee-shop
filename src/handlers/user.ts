@@ -1,11 +1,15 @@
 import { Request, Response } from "express-serve-static-core";
 import bcrypt from "bcrypt";
+import jwt, { SignOptions } from "jsonwebtoken";
 
 import { getAllUser, getOneUser, createUser, deleteUser, updateOneUser, updateAllUser, registerUser, getPwdUser } from "../repositories/user";
 
-import { IuserBody, IuserParams, IuserQuery, IuserResgisterBody, IuserLoginBody } from "../models/user";
+import { IUserBody, IUserParams, IUserQuery, IUserResgisterBody, IUserLoginBody } from "../models/user";
+import { IAuthResponse, IUserResponse } from "../models/response";
+import { IPayload } from "../models/payload";
+import { jwtOptions } from "../middlewares/authorization";
 
-export const getUser = async (req: Request<{}, {}, {}, IuserQuery>, res: Response) => {
+export const getUser = async (req: Request<{}, {}, {}, IUserQuery>, res: Response<IUserResponse>) => {
   try {
     const result = await getAllUser(req.query);
     if (result.rowCount === 0) {
@@ -29,9 +33,10 @@ export const getUser = async (req: Request<{}, {}, {}, IuserQuery>, res: Respons
   }
 };
 
-export const getDetailUser = async (req: Request<IuserParams>, res: Response) => {
+export const getDetailUser = async (req: Request, res: Response<IUserResponse>) => {
+  const { uuid } = req.userPayload as IPayload;
   try {
-    const result = await getOneUser(req.params);
+    const result = await getOneUser(uuid as string);
     if (result.rowCount === 0) {
       return res.status(404).json({
         msg: "User tidak ditemukan",
@@ -53,11 +58,11 @@ export const getDetailUser = async (req: Request<IuserParams>, res: Response) =>
   }
 };
 
-export const createNewUser = async (req: Request<{}, {}, IuserBody>, res: Response) => {
+export const createNewUser = async (req: Request<{}, {}, IUserBody>, res: Response<IUserResponse>) => {
   try {
     const result = await createUser(req.body);
     return res.status(201).json({
-      message: "success",
+      msg: "success",
       data: result.rows,
     });
   } catch (err) {
@@ -71,7 +76,7 @@ export const createNewUser = async (req: Request<{}, {}, IuserBody>, res: Respon
   }
 };
 
-export const deleteExtUser = async (req: Request<IuserParams>, res: Response) => {
+export const deleteExtUser = async (req: Request<IUserParams>, res: Response<IUserResponse>) => {
   try {
     const result = await deleteUser(req.params);
     if (result.rowCount === 0) {
@@ -82,7 +87,7 @@ export const deleteExtUser = async (req: Request<IuserParams>, res: Response) =>
     }
     return res.status(200).json({
       msg: "Success",
-      data: result,
+      data: result.rows,
     });
   } catch (err) {
     if (err instanceof Error) {
@@ -95,7 +100,7 @@ export const deleteExtUser = async (req: Request<IuserParams>, res: Response) =>
   }
 };
 
-export const registerNewUser = async (req: Request<{}, {}, IuserResgisterBody>, res: Response) => {
+export const registerNewUser = async (req: Request<{}, {}, IUserResgisterBody>, res: Response<IUserResponse>) => {
   const { pwd } = req.body;
   try {
     // membuat hashed password
@@ -118,28 +123,39 @@ export const registerNewUser = async (req: Request<{}, {}, IuserResgisterBody>, 
   }
 };
 
-export const loginUser = async (req: Request<{}, {}, IuserLoginBody>, res: Response) => {
+// Authenticaton
+export const loginUser = async (req: Request<{}, {}, IUserLoginBody>, res: Response<IAuthResponse>) => {
   const { uuid, pwd } = req.body;
   try {
+    // user login menggunakan uuid
     const result = await getPwdUser(uuid);
-    if (!result.rows.length) throw new Error("Siswa tidak ditemukan");
+    // handling jika password tidak ditemukan
+    if (!result.rows.length) throw new Error("User tidak ditemukan");
     const { pwd: hash, full_name } = result.rows[0];
+    // mengecek apakah password sama
     const isPwdValid = await bcrypt.compare(pwd, hash);
+    // handling jika password salah
     if (!isPwdValid) throw new Error("Login Gagal");
+    // jika pwd benar, buatkan token
+    const payload: IPayload = {
+      uuid, //uuid: uuid
+    };
+    const token = jwt.sign(payload, <string>process.env.JWT_SECRET, jwtOptions);
     return res.status(200).json({
       msg: `Selamat datang, ${full_name}`,
+      data: [{ token }],
     });
   } catch (err) {
     if (err instanceof Error) {
       if (/(invalid(.)+uuid(.)+)/g.test(err.message)) {
         return res.status(401).json({
           msg: "Error",
-          err: "Siswa tidak ditemukan",
+          err: "User tidak ditemukan",
         });
       }
       return res.status(401).json({
         msg: "Error",
-        err: "Unauthorized",
+        err: err.message,
       });
     }
     return res.status(500).json({
@@ -149,7 +165,7 @@ export const loginUser = async (req: Request<{}, {}, IuserLoginBody>, res: Respo
   }
 };
 
-export const updateUser = async (req: Request<IuserParams, {}, IuserBody>, res: Response) => {
+export const updateUser = async (req: Request<IUserParams, {}, IUserBody>, res: Response<IUserResponse>) => {
   try {
     const result = await updateAllUser(req.params, req.body);
     if (result.rowCount === 0) {
@@ -159,7 +175,7 @@ export const updateUser = async (req: Request<IuserParams, {}, IuserBody>, res: 
       });
     }
     return res.status(201).json({
-      message: "success",
+      msg: "success",
       data: result.rows,
     });
   } catch (err) {
@@ -173,7 +189,7 @@ export const updateUser = async (req: Request<IuserParams, {}, IuserBody>, res: 
   }
 };
 
-export const updateDetailUser = async (req: Request<IuserParams, {}, IuserBody>, res: Response) => {
+export const updateDetailUser = async (req: Request<IUserParams, {}, IUserBody>, res: Response<IUserResponse>) => {
   try {
     const result = await updateOneUser(req.params, req.body);
     if (result.rowCount === 0) {
@@ -183,7 +199,7 @@ export const updateDetailUser = async (req: Request<IuserParams, {}, IuserBody>,
       });
     }
     return res.status(201).json({
-      message: "success",
+      msg: "success",
       data: result.rows,
     });
   } catch (err) {

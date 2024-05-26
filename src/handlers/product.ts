@@ -1,9 +1,9 @@
 import { Request, Response } from "express-serve-static-core";
 
 import { getAllProduct, getOneProduct, createProduct, deleteProduct, updateOneProduct, updateAllProduct } from "../repositories/product";
-import { IproductBody, IproductParams, IproductQuery } from "../models/product";
+import { IProductBody, IProductParams, IProductQuery } from "../models/product";
 
-export const getProduct = async (req: Request<{}, {}, {}, IproductQuery>, res: Response) => {
+export const getProduct = async (req: Request<{}, {}, {}, IProductQuery>, res: Response) => {
   try {
     const result = await getAllProduct(req.query);
     if (result.rowCount === 0) {
@@ -27,7 +27,7 @@ export const getProduct = async (req: Request<{}, {}, {}, IproductQuery>, res: R
   }
 };
 
-export const getDetailProduct = async (req: Request<IproductParams>, res: Response) => {
+export const getDetailProduct = async (req: Request<IProductParams>, res: Response) => {
   try {
     const result = await getOneProduct(req.params);
     if (result.rowCount === 0) {
@@ -51,11 +51,11 @@ export const getDetailProduct = async (req: Request<IproductParams>, res: Respon
   }
 };
 
-export const createNewProduct = async (req: Request<{}, {}, IproductBody>, res: Response) => {
+export const createNewProduct = async (req: Request<{}, {}, IProductBody>, res: Response) => {
   try {
     const result = await createProduct(req.body);
     return res.status(201).json({
-      message: "success",
+      msg: "success",
       data: result.rows,
     });
   } catch (err) {
@@ -69,7 +69,7 @@ export const createNewProduct = async (req: Request<{}, {}, IproductBody>, res: 
   }
 };
 
-export const deleteExtProduct = async (req: Request<IproductParams>, res: Response) => {
+export const deleteExtProduct = async (req: Request<IProductParams>, res: Response) => {
   try {
     const result = await deleteProduct(req.params);
     if (result.rowCount === 0) {
@@ -93,7 +93,7 @@ export const deleteExtProduct = async (req: Request<IproductParams>, res: Respon
   }
 };
 
-export const updateProduct = async (req: Request<IproductParams, {}, IproductBody>, res: Response) => {
+export const updateProduct = async (req: Request<IProductParams, {}, IProductBody>, res: Response) => {
   try {
     const result = await updateAllProduct(req.params, req.body);
     if (result.rowCount === 0) {
@@ -103,7 +103,7 @@ export const updateProduct = async (req: Request<IproductParams, {}, IproductBod
       });
     }
     return res.status(201).json({
-      message: "success",
+      msg: "success",
       data: result.rows,
     });
   } catch (err) {
@@ -117,7 +117,7 @@ export const updateProduct = async (req: Request<IproductParams, {}, IproductBod
   }
 };
 
-export const updateDetailProduct = async (req: Request<IproductParams, {}, IproductBody>, res: Response) => {
+export const updateDetailProduct = async (req: Request<IProductParams, {}, IProductBody>, res: Response) => {
   try {
     const result = await updateOneProduct(req.params, req.body);
     if (result.rowCount === 0) {
@@ -127,7 +127,7 @@ export const updateDetailProduct = async (req: Request<IproductParams, {}, Iprod
       });
     }
     return res.status(201).json({
-      message: "success",
+      msg: "success",
       data: result.rows,
     });
   } catch (err) {

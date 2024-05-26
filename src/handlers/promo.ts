@@ -1,7 +1,7 @@
 import { Request, Response } from "express-serve-static-core";
 
 import { getOnePromo, createPromo, getAllPromo, deletePromo, updateOnePromo, updateAllPromo } from "../repositories/promo";
-import { IpromoBody, IpromoParams } from "../models/promo";
+import { IPromoBody, IPromoParams } from "../models/promo";
 
 export const getPromo = async (req: Request, res: Response) => {
   try {
@@ -27,7 +27,7 @@ export const getPromo = async (req: Request, res: Response) => {
   }
 };
 
-export const getDetailPromo = async (req: Request<IpromoParams>, res: Response) => {
+export const getDetailPromo = async (req: Request<IPromoParams>, res: Response) => {
   try {
     const result = await getOnePromo(req.params);
     if (result.rowCount === 0) {
@@ -51,11 +51,11 @@ export const getDetailPromo = async (req: Request<IpromoParams>, res: Response) 
   }
 };
 
-export const createNewPromo = async (req: Request<{}, {}, IpromoBody>, res: Response) => {
+export const createNewPromo = async (req: Request<{}, {}, IPromoBody>, res: Response) => {
   try {
     const result = await createPromo(req.body);
     return res.status(201).json({
-      message: "success",
+      msg: "success",
       data: result.rows,
     });
   } catch (err) {
@@ -69,7 +69,7 @@ export const createNewPromo = async (req: Request<{}, {}, IpromoBody>, res: Resp
   }
 };
 
-export const deleteExtPromo = async (req: Request<IpromoParams>, res: Response) => {
+export const deleteExtPromo = async (req: Request<IPromoParams>, res: Response) => {
   try {
     const result = await deletePromo(req.params);
     if (result.rowCount === 0) {
@@ -80,30 +80,6 @@ export const deleteExtPromo = async (req: Request<IpromoParams>, res: Response) 
     }
     return res.status(200).json({
       msg: "Success",
-      data: result,
-    });
-  } catch (err) {
-    if (err instanceof Error) {
-      console.log(err.message);
-    }
-    return res.status(500).json({
-      msg: "Error",
-      err: "Internal Server Error",
-    });
-  }
-};
-
-export const updatePromo = async (req: Request<IpromoParams, {}, IpromoBody>, res: Response) => {
-  try {
-    const result = await updateAllPromo(req.params, req.body);
-    if (result.rowCount === 0) {
-      return res.status(404).json({
-        msg: "Promo tidak ditemukan",
-        data: [],
-      });
-    }
-    return res.status(201).json({
-      message: "success",
       data: result.rows,
     });
   } catch (err) {
@@ -117,7 +93,31 @@ export const updatePromo = async (req: Request<IpromoParams, {}, IpromoBody>, re
   }
 };
 
-export const updateDetailPromo = async (req: Request<IpromoParams, {}, IpromoBody>, res: Response) => {
+export const updatePromo = async (req: Request<IPromoParams, {}, IPromoBody>, res: Response) => {
+  try {
+    const result = await updateAllPromo(req.params, req.body);
+    if (result.rowCount === 0) {
+      return res.status(404).json({
+        msg: "Promo tidak ditemukan",
+        data: [],
+      });
+    }
+    return res.status(201).json({
+      msg: "success",
+      data: result.rows,
+    });
+  } catch (err) {
+    if (err instanceof Error) {
+      console.log(err.message);
+    }
+    return res.status(500).json({
+      msg: "Error",
+      err: "Internal Server Error",
+    });
+  }
+};
+
+export const updateDetailPromo = async (req: Request<IPromoParams, {}, IPromoBody>, res: Response) => {
   try {
     const result = await updateOnePromo(req.params, req.body);
     if (result.rowCount === 0) {
@@ -127,7 +127,7 @@ export const updateDetailPromo = async (req: Request<IpromoParams, {}, IpromoBod
       });
     }
     return res.status(201).json({
-      message: "success",
+      msg: "success",
       data: result.rows,
     });
   } catch (err) {

@@ -1,8 +1,8 @@
-export interface IproductParams {
+export interface IProductParams {
   uuid: string;
 }
 
-export interface IproductQuery {
+export interface IProductQuery {
   product_name?: string;
   price?: number;
   category?: string;
@@ -10,7 +10,7 @@ export interface IproductQuery {
   page?: "1" | "2" | "3";
 }
 
-export interface IproductBody {
+export interface IProductBody {
   product_name: string;
   price: number;
   category: string;
@@ -20,7 +20,7 @@ export interface IproductBody {
   stock: number;
 }
 
-export interface IdataProduct extends IproductBody {
+export interface IDataProduct extends IProductBody {
   id: number;
   uuid: string;
   created_at: string;

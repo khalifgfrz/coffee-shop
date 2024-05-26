@@ -1,15 +1,15 @@
-export interface IpromoParams {
+export interface IPromoParams {
   uuid: string;
 }
 
-export interface IpromoBody {
+export interface IPromoBody {
   promo_name: string;
   discount_type: string;
   flat_amount: number;
   percent_amount: number;
 }
 
-export interface IdataPromo extends IpromoBody {
+export interface IDataPromo extends IPromoBody {
   id: number;
   uuid: string;
   created_at: string;

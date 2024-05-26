@@ -1,12 +1,12 @@
-export interface IuserParams {
+export interface IUserParams {
   uuid: string;
 }
 
-export interface IuserQuery {
+export interface IUserQuery {
   page?: "1" | "2" | "3";
 }
 
-export interface IuserBody {
+export interface IUserBody {
   full_name: string;
   phone: string;
   address: string;
@@ -14,18 +14,18 @@ export interface IuserBody {
   role: string;
 }
 
-export interface IdataUser extends IuserBody {
+export interface IDataUser extends IUserBody {
   id: number;
   uuid: string;
   created_at: string;
   updated_at: string | null;
 }
 
-export interface IuserResgisterBody extends IuserBody {
+export interface IUserResgisterBody extends IUserBody {
   pwd: string;
 }
 
-export interface IuserLoginBody {
+export interface IUserLoginBody {
   uuid: string;
   pwd: string;
 }
