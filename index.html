@@ -13,22 +13,30 @@
     <p id="response"></p>
   </body>
   <script>
-    const patchReq = (nis) => {
+    const patchReq = (uuid) => {
+      const url = `http://localhost:8000/user/${uuid}/pwd`;
+      const body = { pwd: "darleen" };
       axios
-        .patch(`http://localhost:8000/siswa/${nis}/pwd`, { pwd: "agus" })
+        .patch(url, body)
         .then((res) => (response.innerHTML = `<span>${res.data.msg}</span>`))
         .catch((err) => console.log(err));
     };
     const getReq = () => {
+      const url = `http://localhost:8000/user`;
       axios
-        .get(`http://localhost:8000/siswa`)
+        .get(url, {
+          headers: {
+            "X-Headers": "TEST",
+          },
+        })
         .then((res) => (response.innerHTML = `<span>${res.data.msg}</span>`))
         .catch((err) => console.log(err));
     };
     const btn = document.querySelector("#btn");
     const response = document.querySelector("#response");
     btn.addEventListener("click", () => {
-      patchReq("53842434-cc37-4ede-9ba9-6668a07b87d2");
+      getReq();
+      // patchReq("385b718c-375b-4cbf-adc7-760a362691f1");
     });
     // fetch("http://localhost:8080/api/v1/books")
     //   .then((response) => response.json())
