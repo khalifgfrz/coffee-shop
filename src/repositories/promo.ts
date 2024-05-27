@@ -5,12 +5,12 @@ import db from "../configs/pg";
 import { IDataPromo, IPromoBody, IPromoParams } from "../models/promo";
 
 export const getAllPromo = (): Promise<QueryResult<IDataPromo>> => {
-  const query = `select uuid, promo_name, discount_type, flat_amount, percent_amount from promo`;
+  const query = `select * from promo`;
   return db.query(query);
 };
 
 export const getOnePromo = (params: IPromoParams): Promise<QueryResult<IDataPromo>> => {
-  const query = `select uuid, promo_name, discount_type, flat_amount, percent_amount from promo where uuid=$1`;
+  const query = `select * from promo where uuid=$1`;
   const { uuid } = params;
   const values = [uuid];
   return db.query(query, values);

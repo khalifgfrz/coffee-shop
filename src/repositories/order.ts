@@ -4,7 +4,7 @@ import db from "../configs/pg";
 import { IDataOrder, IOrderBody, IOrderQuery } from "../models/order";
 
 export const getAllOrder = (que: IOrderQuery): Promise<QueryResult<IDataOrder>> => {
-  let query = `select ol.no_order, ol."date", p.product_name, ol.status, p.price, p2.promo_name from order_list ol
+  let query = `select ol.id ol.no_order, ol."date", p.product_name, ol.status, p.price, p2.promo_name from order_list ol
   join product p on ol.product_id = p.id
   join promo p2 on ol.promo_id = p2.id`;
   const { page } = que;

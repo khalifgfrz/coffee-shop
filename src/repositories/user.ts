@@ -4,7 +4,7 @@ import db from "../configs/pg";
 import { IDataUser, IUserBody, IUserParams, IUserQuery } from "../models/user";
 
 export const getAllUser = (que: IUserQuery): Promise<QueryResult<IDataUser>> => {
-  let query = `select uuid, full_name, phone, address, email, role, created_at, updated_at from "user"`;
+  let query = `select * from "user"`;
   const { page } = que;
   switch (page) {
     case "1":
@@ -21,7 +21,7 @@ export const getAllUser = (que: IUserQuery): Promise<QueryResult<IDataUser>> => 
 };
 
 export const getOneUser = (uuid: string): Promise<QueryResult<IDataUser>> => {
-  const query = `select uuid, full_name, phone, address, email, role, created_at, updated_at from "user" where uuid=$1`;
+  const query = `select * from "user" where uuid=$1`;
   const values = [uuid];
   return db.query(query, values);
 };

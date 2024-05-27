@@ -4,7 +4,7 @@ import db from "../configs/pg";
 import { IDataProduct, IProductBody, IProductParams, IProductQuery } from "../models/product";
 
 export const getAllProduct = (que: IProductQuery): Promise<QueryResult<IDataProduct>> => {
-  let query = `select uuid, product_name, price, category, description, product_size, method, stock from product`;
+  let query = `select * from product`;
   const { product_name, price, category, sortBy, page } = que;
   const values = [];
   let condition = false;
@@ -53,7 +53,7 @@ export const getAllProduct = (que: IProductQuery): Promise<QueryResult<IDataProd
 };
 
 export const getOneProduct = (params: IProductParams): Promise<QueryResult<IDataProduct>> => {
-  const query = `select uuid, product_name, price, category, description, product_size, method, stock from product where uuid=$1`;
+  const query = `select * from product where uuid=$1`;
   const { uuid } = params;
   const values = [uuid];
   return db.query(query, values);
