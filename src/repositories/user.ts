@@ -97,3 +97,9 @@ export const updateOneUser = (params: IUserParams, body: IUserBody): Promise<Que
   }
   return db.query(query, values);
 };
+
+export const setPwdUser = (hashedPwd: string, uuid: string): Promise<QueryResult<{}>> => {
+  const query = `update "user" set pwd = $1, updated_at = now where uuid = $2`;
+  const values = [hashedPwd, uuid];
+  return db.query(query, values);
+};

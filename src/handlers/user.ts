@@ -2,9 +2,9 @@ import { Request, Response } from "express-serve-static-core";
 import bcrypt from "bcrypt";
 import jwt, { SignOptions } from "jsonwebtoken";
 
-import { getAllUser, getOneUser, createUser, deleteUser, updateOneUser, updateAllUser, registerUser, getPwdUser } from "../repositories/user";
+import { getAllUser, getOneUser, createUser, deleteUser, updateOneUser, updateAllUser, registerUser, getPwdUser, setPwdUser } from "../repositories/user";
 
-import { IUserBody, IUserParams, IUserQuery, IUserResgisterBody, IUserLoginBody } from "../models/user";
+import { IUserBody, IUserParams, IUserQuery, IUserRegisterBody, IUserLoginBody } from "../models/user";
 import { IAuthResponse, IUserResponse } from "../models/response";
 import { IPayload } from "../models/payload";
 import { jwtOptions } from "../middlewares/authorization";
@@ -100,7 +100,7 @@ export const deleteExtUser = async (req: Request<IUserParams>, res: Response<IUs
   }
 };
 
-export const registerNewUser = async (req: Request<{}, {}, IUserResgisterBody>, res: Response<IUserResponse>) => {
+export const registerNewUser = async (req: Request<{}, {}, IUserRegisterBody>, res: Response<IUserResponse>) => {
   const { pwd } = req.body;
   try {
     // membuat hashed password
@@ -204,6 +204,33 @@ export const updateDetailUser = async (req: Request<IUserParams, {}, IUserBody>,
     });
   } catch (err) {
     if (err instanceof Error) {
+      console.log(err.message);
+    }
+    return res.status(500).json({
+      msg: "Error",
+      err: "Internal Server Error",
+    });
+  }
+};
+
+export const setPwd = async (req: Request<{ uuid: string }, {}, { pwd: string }>, res: Response<IUserResponse>) => {
+  const { pwd } = req.body;
+  const { uuid } = req.params;
+  try {
+    const salt = await bcrypt.genSalt();
+    const hashed = await bcrypt.hash(pwd, salt);
+    await setPwdUser(hashed, uuid);
+    res.status(200).json({
+      msg: "Berhasil diubah",
+    });
+  } catch (err) {
+    if (err instanceof Error) {
+      if (/(invalid(.)+uuid(.)+)/g.test(err.message)) {
+        return res.status(401).json({
+          msg: "Error",
+          err: "User tidak ditemukan",
+        });
+      }
       console.log(err.message);
     }
     return res.status(500).json({

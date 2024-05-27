@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { createNewUser, getDetailUser, getUser, deleteExtUser, updateDetailUser, updateUser, registerNewUser, loginUser } from "../handlers/user";
+import { createNewUser, getDetailUser, getUser, deleteExtUser, updateDetailUser, updateUser, registerNewUser, loginUser, setPwd } from "../handlers/user";
 import { authorization } from "../middlewares/authorization";
 
 const userRouter = Router();
@@ -23,5 +23,8 @@ userRouter.delete("/:uuid", deleteExtUser);
 // Mengupdate User
 userRouter.put("/:uuid", updateUser);
 userRouter.patch("/:uuid", updateDetailUser);
+
+// Edit Pwd User
+userRouter.patch("/:uuid/pwd", setPwd);
 
 export default userRouter;

@@ -21,7 +21,7 @@ export interface IDataUser extends IUserBody {
   updated_at: string | null;
 }
 
-export interface IUserResgisterBody extends IUserBody {
+export interface IUserRegisterBody extends IUserBody {
   pwd: string;
 }
 
