@@ -9,9 +9,8 @@ export const getAllPromo = (): Promise<QueryResult<IDataPromo>> => {
   return db.query(query);
 };
 
-export const getOnePromo = (params: IPromoParams): Promise<QueryResult<IDataPromo>> => {
+export const getOnePromo = (uuid: string): Promise<QueryResult<IDataPromo>> => {
   const query = `select * from promo where uuid=$1`;
-  const { uuid } = params;
   const values = [uuid];
   return db.query(query, values);
 };
@@ -24,27 +23,24 @@ export const createPromo = (body: IPromoBody): Promise<QueryResult<IDataPromo>> 
   return db.query(query, values);
 };
 
-export const deletePromo = (params: IPromoParams): Promise<QueryResult<IDataPromo>> => {
+export const deletePromo = (uuid: string): Promise<QueryResult<IDataPromo>> => {
   const query = `delete from promo where uuid=$1
   returning promo_name, discount_type, flat_amount, percent_amount`;
-  const { uuid } = params;
   const values = [uuid];
   return db.query(query, values);
 };
 
-export const updateAllPromo = (params: IPromoParams, body: IPromoBody): Promise<QueryResult<IDataPromo>> => {
+export const updateAllPromo = (body: IPromoBody, uuid: string): Promise<QueryResult<IDataPromo>> => {
   const query = `update promo set promo_name = $1, discount_type = $2, flat_amount = $3, percent_amount = $4, updated_at = now() where uuid = $5
     returning promo_name, discount_type, flat_amount, percent_amount`;
   const { promo_name, discount_type, flat_amount, percent_amount } = body;
-  const { uuid } = params;
   const values = [promo_name, discount_type, flat_amount, percent_amount, uuid];
   return db.query(query, values);
 };
 
-export const updateOnePromo = (params: IPromoParams, body: IPromoBody): Promise<QueryResult<IDataPromo>> => {
+export const updateOnePromo = (body: IPromoBody, uuid: string): Promise<QueryResult<IDataPromo>> => {
   let query = `update promo set`;
   const { promo_name, discount_type, flat_amount, percent_amount } = body;
-  const { uuid } = params;
   const values = [];
   if (promo_name) {
     query += ` promo_name = $1, updated_at = now() where uuid = $2

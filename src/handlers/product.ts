@@ -28,8 +28,9 @@ export const getProduct = async (req: Request<{}, {}, {}, IProductQuery>, res: R
 };
 
 export const getDetailProduct = async (req: Request<IProductParams>, res: Response) => {
+  const { uuid } = req.params;
   try {
-    const result = await getOneProduct(req.params);
+    const result = await getOneProduct(uuid);
     if (result.rowCount === 0) {
       return res.status(404).json({
         msg: "Produk tidak ditemukan",
@@ -70,8 +71,9 @@ export const createNewProduct = async (req: Request<{}, {}, IProductBody>, res: 
 };
 
 export const deleteExtProduct = async (req: Request<IProductParams>, res: Response) => {
+  const { uuid } = req.params;
   try {
-    const result = await deleteProduct(req.params);
+    const result = await deleteProduct(uuid);
     if (result.rowCount === 0) {
       return res.status(404).json({
         msg: "Produk tidak ditemukan",
@@ -94,8 +96,9 @@ export const deleteExtProduct = async (req: Request<IProductParams>, res: Respon
 };
 
 export const updateProduct = async (req: Request<IProductParams, {}, IProductBody>, res: Response) => {
+  const { uuid } = req.params;
   try {
-    const result = await updateAllProduct(req.params, req.body);
+    const result = await updateAllProduct(req.body, uuid);
     if (result.rowCount === 0) {
       return res.status(404).json({
         msg: "Produk tidak ditemukan",
@@ -118,8 +121,9 @@ export const updateProduct = async (req: Request<IProductParams, {}, IProductBod
 };
 
 export const updateDetailProduct = async (req: Request<IProductParams, {}, IProductBody>, res: Response) => {
+  const { uuid } = req.params;
   try {
-    const result = await updateOneProduct(req.params, req.body);
+    const result = await updateOneProduct(req.body, uuid);
     if (result.rowCount === 0) {
       return res.status(404).json({
         msg: "Produk tidak ditemukan",

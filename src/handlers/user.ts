@@ -77,8 +77,9 @@ export const createNewUser = async (req: Request<{}, {}, IUserBody>, res: Respon
 };
 
 export const deleteExtUser = async (req: Request<IUserParams>, res: Response<IUserResponse>) => {
+  const { uuid } = req.params;
   try {
-    const result = await deleteUser(req.params);
+    const result = await deleteUser(uuid);
     if (result.rowCount === 0) {
       return res.status(404).json({
         msg: "User tidak ditemukan",
@@ -166,8 +167,9 @@ export const loginUser = async (req: Request<{}, {}, IUserLoginBody>, res: Respo
 };
 
 export const updateUser = async (req: Request<IUserParams, {}, IUserBody>, res: Response<IUserResponse>) => {
+  const { uuid } = req.params;
   try {
-    const result = await updateAllUser(req.params, req.body);
+    const result = await updateAllUser(req.body, uuid);
     if (result.rowCount === 0) {
       return res.status(404).json({
         msg: "User tidak ditemukan",
@@ -190,8 +192,9 @@ export const updateUser = async (req: Request<IUserParams, {}, IUserBody>, res: 
 };
 
 export const updateDetailUser = async (req: Request<IUserParams, {}, IUserBody>, res: Response<IUserResponse>) => {
+  const { uuid } = req.params;
   try {
-    const result = await updateOneUser(req.params, req.body);
+    const result = await updateOneUser(req.body, uuid);
     if (result.rowCount === 0) {
       return res.status(404).json({
         msg: "User tidak ditemukan",

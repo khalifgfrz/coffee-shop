@@ -46,7 +46,7 @@ export const deleteOrder = (no_order: string): Promise<QueryResult<IDataOrder>> 
   return db.query(query, values);
 };
 
-export const updateOrder = (no_order: String, body: IOrderBody): Promise<QueryResult<IDataOrder>> => {
+export const updateOrder = (body: IOrderBody, no_order: string): Promise<QueryResult<IDataOrder>> => {
   const query = `update order_list set status = $1, updated_at = now() where no_order = $2
   returning no_order, product_id, promo_id, user_id, status`;
   const { status } = body;

@@ -48,27 +48,24 @@ export const getPwdUser = (uuid: string): Promise<QueryResult<{ full_name: strin
   return db.query(query, values);
 };
 
-export const deleteUser = (params: IUserParams): Promise<QueryResult<IDataUser>> => {
+export const deleteUser = (uuid: string): Promise<QueryResult<IDataUser>> => {
   const query = `delete from "user" where uuid=$1
   returning full_name, phone, address, email, "role"`;
-  const { uuid } = params;
   const values = [uuid];
   return db.query(query, values);
 };
 
-export const updateAllUser = (params: IUserParams, body: IUserBody): Promise<QueryResult<IDataUser>> => {
+export const updateAllUser = (body: IUserBody, uuid: string): Promise<QueryResult<IDataUser>> => {
   const query = `update "user" set full_name = $1, phone = $2, address = $3, email = $4, "role" = $5, updated_at = now() where uuid = $6
     returning full_name, phone, address, email, role`;
   const { full_name, phone, address, email, role } = body;
-  const { uuid } = params;
   const values = [full_name, phone, address, email, role, uuid];
   return db.query(query, values);
 };
 
-export const updateOneUser = (params: IUserParams, body: IUserBody): Promise<QueryResult<IDataUser>> => {
+export const updateOneUser = (body: IUserBody, uuid: string): Promise<QueryResult<IDataUser>> => {
   let query = `update "user" set`;
   const { full_name, phone, address, email, role } = body;
-  const { uuid } = params;
   const values = [];
   if (full_name) {
     query += ` full_name = $1, updated_at = now() where uuid = $2

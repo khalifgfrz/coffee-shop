@@ -28,8 +28,9 @@ export const getPromo = async (req: Request, res: Response) => {
 };
 
 export const getDetailPromo = async (req: Request<IPromoParams>, res: Response) => {
+  const { uuid } = req.params;
   try {
-    const result = await getOnePromo(req.params);
+    const result = await getOnePromo(uuid);
     if (result.rowCount === 0) {
       return res.status(404).json({
         msg: "Promo tidak ditemukan",
@@ -70,8 +71,9 @@ export const createNewPromo = async (req: Request<{}, {}, IPromoBody>, res: Resp
 };
 
 export const deleteExtPromo = async (req: Request<IPromoParams>, res: Response) => {
+  const { uuid } = req.params;
   try {
-    const result = await deletePromo(req.params);
+    const result = await deletePromo(uuid);
     if (result.rowCount === 0) {
       return res.status(404).json({
         msg: "Promo tidak ditemukan",
@@ -94,8 +96,9 @@ export const deleteExtPromo = async (req: Request<IPromoParams>, res: Response) 
 };
 
 export const updatePromo = async (req: Request<IPromoParams, {}, IPromoBody>, res: Response) => {
+  const { uuid } = req.params;
   try {
-    const result = await updateAllPromo(req.params, req.body);
+    const result = await updateAllPromo(req.body, uuid);
     if (result.rowCount === 0) {
       return res.status(404).json({
         msg: "Promo tidak ditemukan",
@@ -118,8 +121,9 @@ export const updatePromo = async (req: Request<IPromoParams, {}, IPromoBody>, re
 };
 
 export const updateDetailPromo = async (req: Request<IPromoParams, {}, IPromoBody>, res: Response) => {
+  const { uuid } = req.params;
   try {
-    const result = await updateOnePromo(req.params, req.body);
+    const result = await updateOnePromo(req.body, uuid);
     if (result.rowCount === 0) {
       return res.status(404).json({
         msg: "Promo tidak ditemukan",

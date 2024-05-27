@@ -52,9 +52,8 @@ export const getAllProduct = (que: IProductQuery): Promise<QueryResult<IDataProd
   return db.query(query, values);
 };
 
-export const getOneProduct = (params: IProductParams): Promise<QueryResult<IDataProduct>> => {
+export const getOneProduct = (uuid: string): Promise<QueryResult<IDataProduct>> => {
   const query = `select * from product where uuid=$1`;
-  const { uuid } = params;
   const values = [uuid];
   return db.query(query, values);
 };
@@ -67,27 +66,24 @@ export const createProduct = (body: IProductBody): Promise<QueryResult<IDataProd
   return db.query(query, values);
 };
 
-export const deleteProduct = (params: IProductParams): Promise<QueryResult<IDataProduct>> => {
+export const deleteProduct = (uuid: string): Promise<QueryResult<IDataProduct>> => {
   const query = `delete from product where uuid=$1
   returning product_name, price, category, description, product_size, method, stock`;
-  const { uuid } = params;
   const values = [uuid];
   return db.query(query, values);
 };
 
-export const updateAllProduct = (params: IProductParams, body: IProductBody): Promise<QueryResult<IDataProduct>> => {
+export const updateAllProduct = (body: IProductBody, uuid: string): Promise<QueryResult<IDataProduct>> => {
   const query = `update product set product_name = $1, price = $2, category = $3, description = $4, product_size = $5, method = $6, stock = $7, updated_at = now() where uuid = $8
   returning product_name, price, category, description, product_size, method, stock`;
   const { product_name, price, category, description, product_size, method, stock } = body;
-  const { uuid } = params;
   const values = [product_name, price, category, description, product_size, method, stock, uuid];
   return db.query(query, values);
 };
 
-export const updateOneProduct = (params: IProductParams, body: IProductBody): Promise<QueryResult<IDataProduct>> => {
+export const updateOneProduct = (body: IProductBody, uuid: string): Promise<QueryResult<IDataProduct>> => {
   let query = `update product set`;
   const { product_name, price, category, description, product_size, method, stock } = body;
-  const { uuid } = params;
   const values = [];
   if (product_name) {
     query += ` product_name = $1, updated_at = now() where uuid = $2

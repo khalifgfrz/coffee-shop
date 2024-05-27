@@ -98,7 +98,7 @@ export const deleteExtOrder = async (req: Request<IOrderParams>, res: Response) 
 export const updatedOrder = async (req: Request<IOrderParams, {}, IOrderBody>, res: Response) => {
   try {
     const { no_order } = req.params;
-    const result = await updateOrder(no_order, req.body);
+    const result = await updateOrder(req.body, no_order);
     if (result.rowCount === 0) {
       return res.status(404).json({
         msg: "Pesanan tidak ditemukan",
