@@ -6,16 +6,16 @@ const userRouter = Router();
 
 // CRUD
 userRouter.get("/", getUser);
-userRouter.get("/:uuid", authorization(), getDetailUser);
+userRouter.get("/detail", authorization(), getDetailUser);
 
 // Menambah User Baru
 userRouter.post("/", createNewUser);
 
 // Register Akun User
-userRouter.post("/new", registerNewUser);
+userRouter.post("/register", registerNewUser);
 
 // Login Akun User
-userRouter.post("/account", loginUser);
+userRouter.post("/login", loginUser);
 
 // Menghapus User
 userRouter.delete("/:uuid", deleteExtUser);

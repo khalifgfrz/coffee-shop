@@ -7,7 +7,7 @@ export interface IProductQuery {
   price?: number;
   category?: string;
   sortBy?: "product_name" | "price" | "latest" | "oldest";
-  page?: "1" | "2" | "3";
+  page?: string;
 }
 
 export interface IProductBody {

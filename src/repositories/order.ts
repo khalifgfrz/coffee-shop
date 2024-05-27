@@ -3,27 +3,21 @@ import { QueryResult } from "pg";
 import db from "../configs/pg";
 import { IDataOrder, IOrderBody, IOrderQuery } from "../models/order";
 
-export const getAllOrder = (que: IOrderQuery): Promise<QueryResult<IDataOrder>> => {
-  let query = `select ol.id ol.no_order, ol."date", p.product_name, ol.status, p.price, p2.promo_name from order_list ol
+export const getAllOrder = ({ page }: IOrderQuery): Promise<QueryResult<IDataOrder>> => {
+  let query = `select ol.id, ol.no_order, ol."date", p.product_name, ol.status, p.price, p2.promo_name from order_list ol
   join product p on ol.product_id = p.id
   join promo p2 on ol.promo_id = p2.id`;
-  const { page } = que;
-  switch (page) {
-    case "1":
-      query += " limit 10 offset 0";
-      break;
-    case "2":
-      query += " limit 10 offset 10";
-      break;
-    case "3":
-      query += " limit 10 offset 20";
-      break;
+  const values = [];
+  if (page) {
+    const offset = (parseInt(page) - 1) * 4;
+    query += ` limit 4 offset $${values.length + 1}`;
+    values.push(offset);
   }
-  return db.query(query);
+  return db.query(query, values);
 };
 
 export const getOneOrder = (no_order: string): Promise<QueryResult<IDataOrder>> => {
-  const query = `select ol.no_order, ol."date", p.product_name, ol.status, p.price, p2.promo_name from order_list ol
+  const query = `select ol.id, ol.no_order, ol."date", p.product_name, ol.status, p.price, p2.promo_name from order_list ol
   join product p on ol.product_id = p.id
   join promo p2 on ol.promo_id = p2.id
   where ol."no_order" = $1`;
@@ -52,4 +46,9 @@ export const updateOrder = (body: IOrderBody, no_order: string): Promise<QueryRe
   const { status } = body;
   const values = [status, no_order];
   return db.query(query, values);
+};
+
+export const getTotalOrder = (): Promise<QueryResult<{ total_order: string }>> => {
+  const query = `select count(*) as "total_order" from order_list`;
+  return db.query(query);
 };

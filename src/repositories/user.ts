@@ -1,23 +1,17 @@
 import { QueryResult } from "pg";
 
 import db from "../configs/pg";
-import { IDataUser, IUserBody, IUserParams, IUserQuery } from "../models/user";
+import { IDataUser, IUserBody, IUserQuery } from "../models/user";
 
-export const getAllUser = (que: IUserQuery): Promise<QueryResult<IDataUser>> => {
-  let query = `select * from "user"`;
-  const { page } = que;
-  switch (page) {
-    case "1":
-      query += " limit 10 offset 0";
-      break;
-    case "2":
-      query += " limit 10 offset 10";
-      break;
-    case "3":
-      query += " limit 10 offset 20";
-      break;
+export const getAllUser = ({ page }: IUserQuery): Promise<QueryResult<IDataUser>> => {
+  let query = `select * from "user" order by id asc`;
+  const values = [];
+  if (page) {
+    const offset = (parseInt(page) - 1) * 4;
+    query += ` limit 4 offset $${values.length + 1}`;
+    values.push(offset);
   }
-  return db.query(query);
+  return db.query(query, values);
 };
 
 export const getOneUser = (uuid: string): Promise<QueryResult<IDataUser>> => {
@@ -99,4 +93,9 @@ export const setPwdUser = (hashedPwd: string, uuid: string): Promise<QueryResult
   const query = `update "user" set pwd = $1, updated_at = now() where uuid = $2`;
   const values = [hashedPwd, uuid];
   return db.query(query, values);
+};
+
+export const getTotalUser = (): Promise<QueryResult<{ total_user: string }>> => {
+  const query = `select count(*) as "total_user" from "user"`;
+  return db.query(query);
 };

@@ -1,9 +1,11 @@
 import { Request, Response } from "express-serve-static-core";
 
-import { createOrder, deleteOrder, getAllOrder, getOneOrder, updateOrder } from "../repositories/order";
+import { createOrder, deleteOrder, getAllOrder, getOneOrder, getTotalOrder, updateOrder } from "../repositories/order";
 import { IOrderParams, IOrderBody, IOrderQuery } from "../models/order";
+import getOrderLink from "../helpers/getOrderLink";
+import { IOrderResponse } from "../models/response";
 
-export const getOrder = async (req: Request<{}, {}, {}, IOrderQuery>, res: Response) => {
+export const getOrder = async (req: Request<{}, {}, {}, IOrderQuery>, res: Response<IOrderResponse>) => {
   try {
     const result = await getAllOrder(req.query);
     if (result.rowCount === 0) {
@@ -12,9 +14,20 @@ export const getOrder = async (req: Request<{}, {}, {}, IOrderQuery>, res: Respo
         data: [],
       });
     }
+    const dataOrder = await getTotalOrder();
+    const page = parseInt((req.query.page as string) || "1");
+    const totalData = parseInt(dataOrder.rows[0].total_order);
+    const totalPage = Math.ceil(totalData / 4);
     return res.status(200).json({
       msg: "Success",
       data: result.rows,
+      meta: {
+        totalData,
+        totalPage,
+        page,
+        prevLink: page > 1 ? getOrderLink(req, "previous") : null,
+        nextLink: page != totalPage ? getOrderLink(req, "next") : null,
+      },
     });
   } catch (err) {
     if (err instanceof Error) {

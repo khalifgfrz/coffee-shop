@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express-serve-static-core";
 import jwt, { SignOptions } from "jsonwebtoken";
 
-import { AppParams } from "../models/params";
+import { AppUserParams } from "../models/params";
 import { IAuthResponse } from "../models/response";
 import { IPayload } from "../models/payload";
 
@@ -10,7 +10,7 @@ export const jwtOptions: SignOptions = {
   issuer: process.env.JWT_ISSUER,
 };
 
-export const authorization = (role?: string[]) => (req: Request<AppParams>, res: Response<IAuthResponse>, next: NextFunction) => {
+export const authorization = (role?: string[]) => (req: Request<AppUserParams>, res: Response<IAuthResponse>, next: NextFunction) => {
   // cek jwt
   //  ambil jwt dari header
   const bearerToken = req.header("Authorization");

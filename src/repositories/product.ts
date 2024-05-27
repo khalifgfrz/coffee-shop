@@ -1,7 +1,7 @@
 import { QueryResult } from "pg";
 
 import db from "../configs/pg";
-import { IDataProduct, IProductBody, IProductParams, IProductQuery } from "../models/product";
+import { IDataProduct, IProductBody, IProductQuery } from "../models/product";
 
 export const getAllProduct = (que: IProductQuery): Promise<QueryResult<IDataProduct>> => {
   let query = `select * from product`;
@@ -38,16 +38,10 @@ export const getAllProduct = (que: IProductQuery): Promise<QueryResult<IDataProd
       query += " order by created_at asc";
       break;
   }
-  switch (page) {
-    case "1":
-      query += " limit 10 offset 0";
-      break;
-    case "2":
-      query += " limit 10 offset 10";
-      break;
-    case "3":
-      query += " limit 10 offset 20";
-      break;
+  if (page) {
+    const offset = (parseInt(page) - 1) * 5;
+    query += ` limit 5 offset $${values.length + 1}`;
+    values.push(offset);
   }
   return db.query(query, values);
 };
@@ -121,4 +115,9 @@ export const updateOneProduct = (body: IProductBody, uuid: string): Promise<Quer
     values.push(`${stock}`, `${uuid}`);
   }
   return db.query(query, values);
+};
+
+export const getTotalProduct = (): Promise<QueryResult<{ total_product: string }>> => {
+  const query = `select count(*) as "total_product" from product`;
+  return db.query(query);
 };

@@ -1,7 +1,8 @@
 import { Request, Response } from "express-serve-static-core";
 
-import { getAllProduct, getOneProduct, createProduct, deleteProduct, updateOneProduct, updateAllProduct } from "../repositories/product";
+import { getAllProduct, getOneProduct, createProduct, deleteProduct, updateOneProduct, updateAllProduct, getTotalProduct } from "../repositories/product";
 import { IProductBody, IProductParams, IProductQuery } from "../models/product";
+import getProductLink from "../helpers/getProductLink";
 
 export const getProduct = async (req: Request<{}, {}, {}, IProductQuery>, res: Response) => {
   try {
@@ -12,9 +13,20 @@ export const getProduct = async (req: Request<{}, {}, {}, IProductQuery>, res: R
         data: [],
       });
     }
+    const dataProduct = await getTotalProduct();
+    const page = parseInt((req.query.page as string) || "1");
+    const totalData = parseInt(dataProduct.rows[0].total_product);
+    const totalPage = Math.ceil(totalData / 5);
     return res.status(200).json({
       msg: "Success",
       data: result.rows,
+      meta: {
+        totalData,
+        totalPage,
+        page,
+        prevLink: page > 1 ? getProductLink(req, "previous") : null,
+        nextLink: page != totalPage ? getProductLink(req, "next") : null,
+      },
     });
   } catch (err) {
     if (err instanceof Error) {

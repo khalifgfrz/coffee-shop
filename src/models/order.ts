@@ -3,7 +3,7 @@ export interface IOrderParams {
 }
 
 export interface IOrderQuery {
-  page?: "1" | "2" | "3";
+  page?: string;
 }
 
 export interface IOrderBody {

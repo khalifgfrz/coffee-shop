@@ -1,13 +1,14 @@
 import { Request, Response } from "express-serve-static-core";
 import bcrypt from "bcrypt";
-import jwt, { SignOptions } from "jsonwebtoken";
+import jwt from "jsonwebtoken";
 
-import { getAllUser, getOneUser, createUser, deleteUser, updateOneUser, updateAllUser, registerUser, getPwdUser, setPwdUser } from "../repositories/user";
+import { getAllUser, getOneUser, createUser, deleteUser, updateOneUser, updateAllUser, registerUser, getPwdUser, setPwdUser, getTotalUser } from "../repositories/user";
 
 import { IUserBody, IUserParams, IUserQuery, IUserRegisterBody, IUserLoginBody } from "../models/user";
 import { IAuthResponse, IUserResponse } from "../models/response";
 import { IPayload } from "../models/payload";
 import { jwtOptions } from "../middlewares/authorization";
+import getUserLink from "../helpers/getUserLink";
 
 export const getUser = async (req: Request<{}, {}, {}, IUserQuery>, res: Response<IUserResponse>) => {
   try {
@@ -18,9 +19,20 @@ export const getUser = async (req: Request<{}, {}, {}, IUserQuery>, res: Respons
         data: [],
       });
     }
+    const dataUser = await getTotalUser();
+    const page = parseInt((req.query.page as string) || "1");
+    const totalData = parseInt(dataUser.rows[0].total_user);
+    const totalPage = Math.ceil(totalData / 4);
     return res.status(200).json({
       msg: "Success",
       data: result.rows,
+      meta: {
+        totalData,
+        totalPage,
+        page,
+        prevLink: page > 1 ? getUserLink(req, "previous") : null,
+        nextLink: page != totalPage ? getUserLink(req, "next") : null,
+      },
     });
   } catch (err) {
     if (err instanceof Error) {

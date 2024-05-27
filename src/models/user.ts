@@ -3,7 +3,7 @@ export interface IUserParams {
 }
 
 export interface IUserQuery {
-  page?: "1" | "2" | "3";
+  page?: string;
 }
 
 export interface IUserBody {
