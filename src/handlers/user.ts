@@ -138,7 +138,7 @@ export const registerNewUser = async (req: Request<{}, {}, IUserRegisterBody>, r
 
 // Authenticaton
 export const loginUser = async (req: Request<{}, {}, IUserLoginBody>, res: Response<IAuthResponse>) => {
-  const { uuid, pwd } = req.body;
+  const { uuid, role, pwd } = req.body;
   try {
     // user login menggunakan uuid
     const result = await getPwdUser(uuid);
@@ -152,6 +152,7 @@ export const loginUser = async (req: Request<{}, {}, IUserLoginBody>, res: Respo
     // jika pwd benar, buatkan token
     const payload: IPayload = {
       uuid, //uuid: uuid
+      role, //role: roile
     };
     const token = jwt.sign(payload, <string>process.env.JWT_SECRET, jwtOptions);
     return res.status(200).json({

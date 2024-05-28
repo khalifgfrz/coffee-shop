@@ -31,15 +31,17 @@ export const authorization = (role?: string[]) => (req: Request<AppUserParams>, 
         err: err.name,
       });
     }
+
     // pengecekan role
     if (role) {
       if (!role.includes((payload as IPayload).role as string)) {
         return res.status(403).json({
           msg: "Forbidden",
-          err: "Akses tidak diperbolehkan",
+          err: "Akses ditolak",
         });
       }
     }
+
     // valid = lanjut
     req.userPayload = payload;
     next();

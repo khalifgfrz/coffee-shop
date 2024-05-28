@@ -10,17 +10,19 @@ export const getAllProduct = (que: IProductQuery): Promise<QueryResult<IDataProd
   let condition = false;
 
   if (product_name) {
-    query += " where product_name ilike $1";
+    query += ` where product_name ilike $${values.length + 1}`;
     values.push(`%${product_name}%`);
     condition = true;
   }
   if (price) {
-    query += condition ? " and price > $2" : " where price > $1";
+    query += condition ? " and " : " where ";
+    query += ` price > $${values.length + 1}`;
     values.push(`${price}`);
     condition = true;
   }
   if (category) {
-    query += condition ? " and category = $2" : " where category = $1";
+    query += condition ? " and " : " where ";
+    query += ` category = $${values.length + 1}`;
     values.push(`${category}`);
     condition = true;
   }
