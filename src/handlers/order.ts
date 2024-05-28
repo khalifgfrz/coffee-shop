@@ -74,12 +74,6 @@ export const createNewOrder = async (req: Request<{}, {}, IOrderBody>, res: Resp
     });
   } catch (err) {
     if (err instanceof Error) {
-      if (/(invalid(.)+uuid(.)+)/g.test(err.message)) {
-        return res.status(401).json({
-          msg: "Error",
-          err: "User tidak ditemukan",
-        });
-      }
       console.log(err.message);
     }
     return res.status(500).json({
