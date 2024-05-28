@@ -25,4 +25,5 @@ export interface IDataProduct extends IProductBody {
   uuid: string;
   created_at: string;
   updated_at: string | null;
+  img?: string | null;
 }

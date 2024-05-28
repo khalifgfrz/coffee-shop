@@ -2,7 +2,7 @@ import { Request, Response } from "express-serve-static-core";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 
-import { getAllUser, getOneUser, createUser, deleteUser, updateOneUser, updateAllUser, registerUser, getPwdUser, setPwdUser, getTotalUser } from "../repositories/user";
+import { getAllUser, getOneUser, createUser, deleteUser, updateOneUser, registerUser, getPwdUser, setPwdUser, getTotalUser } from "../repositories/user";
 
 import { IUserBody, IUserParams, IUserQuery, IUserRegisterBody, IUserLoginBody } from "../models/user";
 import { IAuthResponse, IUserResponse } from "../models/response";
@@ -152,7 +152,7 @@ export const loginUser = async (req: Request<{}, {}, IUserLoginBody>, res: Respo
     // jika pwd benar, buatkan token
     const payload: IPayload = {
       uuid, //uuid: uuid
-      role, //role: roile
+      role, //role: roles
     };
     const token = jwt.sign(payload, <string>process.env.JWT_SECRET, jwtOptions);
     return res.status(200).json({
@@ -179,10 +179,16 @@ export const loginUser = async (req: Request<{}, {}, IUserLoginBody>, res: Respo
   }
 };
 
-export const updateUser = async (req: Request<IUserParams, {}, IUserBody>, res: Response<IUserResponse>) => {
-  const { uuid } = req.params;
+export const updateDetailUser = async (req: Request<{ uuid: string }, {}, IUserBody>, res: Response<IUserResponse>) => {
+  const { uuid } = req.userPayload as IPayload;
+  const { file } = req;
+  if (!file)
+    return res.status(400).json({
+      msg: "File not found",
+      err: "Only receive input for image files (JPG, PNG, JPEG)",
+    });
   try {
-    const result = await updateAllUser(req.body, uuid);
+    const result = await updateOneUser(req.body, uuid as string, file.filename);
     if (result.rowCount === 0) {
       return res.status(404).json({
         msg: "User tidak ditemukan",
@@ -195,31 +201,12 @@ export const updateUser = async (req: Request<IUserParams, {}, IUserBody>, res: 
     });
   } catch (err) {
     if (err instanceof Error) {
-      console.log(err.message);
-    }
-    return res.status(500).json({
-      msg: "Error",
-      err: "Internal Server Error",
-    });
-  }
-};
-
-export const updateDetailUser = async (req: Request<IUserParams, {}, IUserBody>, res: Response<IUserResponse>) => {
-  const { uuid } = req.params;
-  try {
-    const result = await updateOneUser(req.body, uuid);
-    if (result.rowCount === 0) {
-      return res.status(404).json({
-        msg: "User tidak ditemukan",
-        data: [],
-      });
-    }
-    return res.status(201).json({
-      msg: "success",
-      data: result.rows,
-    });
-  } catch (err) {
-    if (err instanceof Error) {
+      if (/(invalid(.)+uuid(.)+)/g.test(err.message)) {
+        return res.status(401).json({
+          msg: "Error",
+          err: "User tidak ditemukan",
+        });
+      }
       console.log(err.message);
     }
     return res.status(500).json({
@@ -236,6 +223,33 @@ export const setPwd = async (req: Request<{ uuid: string }, {}, { pwd: string }>
     const salt = await bcrypt.genSalt();
     const hashed = await bcrypt.hash(pwd, salt);
     await setPwdUser(hashed, uuid);
+    res.status(200).json({
+      msg: "Berhasil diubah",
+    });
+  } catch (err) {
+    if (err instanceof Error) {
+      if (/(invalid(.)+uuid(.)+)/g.test(err.message)) {
+        return res.status(401).json({
+          msg: "Error",
+          err: "User tidak ditemukan",
+        });
+      }
+      console.log(err.message);
+    }
+    return res.status(500).json({
+      msg: "Error",
+      err: "Internal Server Error",
+    });
+  }
+};
+
+export const changePwd = async (req: Request<{ uuid: string }, {}, { pwd: string }>, res: Response<IUserResponse>) => {
+  const { pwd } = req.body;
+  const { uuid } = req.userPayload as IPayload;
+  try {
+    const salt = await bcrypt.genSalt();
+    const hashed = await bcrypt.hash(pwd, salt);
+    await setPwdUser(hashed, uuid as string);
     res.status(200).json({
       msg: "Berhasil diubah",
     });

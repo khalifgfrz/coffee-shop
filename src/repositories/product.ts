@@ -26,6 +26,7 @@ export const getAllProduct = (que: IProductQuery): Promise<QueryResult<IDataProd
     values.push(`${category}`);
     condition = true;
   }
+
   switch (sortBy) {
     case "product_name":
       query += " order by product_name asc";
@@ -40,6 +41,7 @@ export const getAllProduct = (que: IProductQuery): Promise<QueryResult<IDataProd
       query += " order by created_at asc";
       break;
   }
+
   if (page) {
     const offset = (parseInt(page) - 1) * 5;
     query += ` limit 5 offset $${values.length + 1}`;
@@ -54,11 +56,11 @@ export const getOneProduct = (uuid: string): Promise<QueryResult<IDataProduct>> 
   return db.query(query, values);
 };
 
-export const createProduct = (body: IProductBody): Promise<QueryResult<IDataProduct>> => {
-  const query = `insert into product (product_name, price, category, description, product_size, method, stock) values ($1,$2,$3,$4,$5,$6,$7)
-  returning product_name, price, category, description, product_size, method, stock`;
+export const createProduct = (body: IProductBody, imgUrl?: string): Promise<QueryResult<IDataProduct>> => {
+  const query = `insert into product (product_name, price, category, description, product_size, method, stock, image) values ($1,$2,$3,$4,$5,$6,$7,$8)
+  returning product_name, price, category, description, product_size, method, stock, image`;
   const { product_name, price, category, description, product_size, method, stock } = body;
-  const values = [product_name, price, category, description, product_size, method, stock];
+  const values = [product_name, price, category, description, product_size, method, stock, `/imgs/${imgUrl}`];
   return db.query(query, values);
 };
 
@@ -69,15 +71,7 @@ export const deleteProduct = (uuid: string): Promise<QueryResult<IDataProduct>> 
   return db.query(query, values);
 };
 
-export const updateAllProduct = (body: IProductBody, uuid: string): Promise<QueryResult<IDataProduct>> => {
-  const query = `update product set product_name = $1, price = $2, category = $3, description = $4, product_size = $5, method = $6, stock = $7, updated_at = now() where uuid = $8
-  returning product_name, price, category, description, product_size, method, stock`;
-  const { product_name, price, category, description, product_size, method, stock } = body;
-  const values = [product_name, price, category, description, product_size, method, stock, uuid];
-  return db.query(query, values);
-};
-
-export const updateOneProduct = (body: IProductBody, uuid: string): Promise<QueryResult<IDataProduct>> => {
+export const updateOneProduct = (body: IProductBody, uuid: string, imgUrl?: string): Promise<QueryResult<IDataProduct>> => {
   let query = `update product set`;
   const { product_name, price, category, description, product_size, method, stock } = body;
   const values = [];
@@ -115,6 +109,10 @@ export const updateOneProduct = (body: IProductBody, uuid: string): Promise<Quer
     query += ` stock = $1, updated_at = now() where uuid = $2
     returning product_name, price, category, description, product_size, method, stock`;
     values.push(`${stock}`, `${uuid}`);
+  }
+  if (imgUrl) {
+    query += ` image=$1, updated_at = now() where uuid=$2 returning uuid, image`;
+    values.push(`/imgs/${imgUrl}`, `${uuid}`);
   }
   return db.query(query, values);
 };

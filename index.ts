@@ -24,6 +24,9 @@ const configs: CorsOptions = {
 };
 app.use(cors(configs));
 
+// untuk mengakses static file
+app.use(express.static("./public"));
+
 app.get("/", (req: Request, res: Response) => {
   res.send("OK");
 });

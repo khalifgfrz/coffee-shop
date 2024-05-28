@@ -1,8 +1,8 @@
 import { Request } from "express-serve-static-core";
-import { AppOrderParams, QueryOrderParams } from "../models/params";
+import { AppProductParams, QueryOrderParams } from "../models/params";
 import { IProductQuery } from "../models/product";
 
-const getProductLink = (req: Request<AppOrderParams, {}, {}, QueryOrderParams>, info?: "previous" | "next"): string => {
+const getProductLink = (req: Request<AppProductParams, {}, {}, QueryOrderParams>, info?: "previous" | "next"): string => {
   const { path, hostname, query, protocol, baseUrl } = req;
   const getNewPage = (page: string): number => {
     if (info === "next") return parseInt(page) + 1;

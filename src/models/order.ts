@@ -1,5 +1,5 @@
 export interface IOrderParams {
-  no_order: string;
+  uuid: string;
 }
 
 export interface IOrderQuery {

@@ -19,6 +19,7 @@ export interface IDataUser extends IUserBody {
   uuid: string;
   created_at: string;
   updated_at: string | null;
+  img?: string | null;
 }
 
 export interface IUserRegisterBody extends IUserBody {

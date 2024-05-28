@@ -1,15 +1,16 @@
 import { Router } from "express";
-import { createNewUser, getDetailUser, getUser, deleteExtUser, updateDetailUser, updateUser, registerNewUser, loginUser, setPwd } from "../handlers/user";
+import { createNewUser, getDetailUser, getUser, deleteExtUser, updateDetailUser, registerNewUser, loginUser, setPwd, changePwd } from "../handlers/user";
 import { authorization } from "../middlewares/authorization";
+import { singleUploader } from "../middlewares/upload";
 
 const userRouter = Router();
 
 // CRUD
-userRouter.get("/", getUser);
-userRouter.get("/detail", authorization(["admin", "user"]), getDetailUser);
+userRouter.get("/datauser", authorization(["admin"]), getUser);
+userRouter.get("/", authorization(["admin", "user"]), getDetailUser);
 
 // Menambah User Baru
-userRouter.post("/", createNewUser);
+userRouter.post("/createuser", authorization(["admin"]), createNewUser);
 
 // Register Akun User
 userRouter.post("/register", registerNewUser);
@@ -21,8 +22,10 @@ userRouter.post("/login", loginUser);
 userRouter.delete("/:uuid", deleteExtUser);
 
 // Mengupdate User
-userRouter.put("/:uuid", updateUser);
-userRouter.patch("/:uuid", updateDetailUser);
+userRouter.patch("/settings", authorization(["admin", "user"]), singleUploader("image"), updateDetailUser);
+
+// Change Pwd
+userRouter.patch("/resetpassword", authorization(["admin", "user"]), changePwd);
 
 // Edit Pwd User
 userRouter.patch("/:uuid/pwd", setPwd);

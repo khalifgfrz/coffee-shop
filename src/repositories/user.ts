@@ -49,15 +49,7 @@ export const deleteUser = (uuid: string): Promise<QueryResult<IDataUser>> => {
   return db.query(query, values);
 };
 
-export const updateAllUser = (body: IUserBody, uuid: string): Promise<QueryResult<IDataUser>> => {
-  const query = `update "user" set full_name = $1, phone = $2, address = $3, email = $4, "role" = $5, updated_at = now() where uuid = $6
-    returning full_name, phone, address, email, role`;
-  const { full_name, phone, address, email, role } = body;
-  const values = [full_name, phone, address, email, role, uuid];
-  return db.query(query, values);
-};
-
-export const updateOneUser = (body: IUserBody, uuid: string): Promise<QueryResult<IDataUser>> => {
+export const updateOneUser = (body: IUserBody, uuid: string, imgUrl?: string): Promise<QueryResult<IDataUser>> => {
   let query = `update "user" set`;
   const { full_name, phone, address, email, role } = body;
   const values = [];
@@ -85,6 +77,10 @@ export const updateOneUser = (body: IUserBody, uuid: string): Promise<QueryResul
     query += ` "role" = $1, updated_at = now() where uuid = $2
     returning full_name, phone, address, email, role`;
     values.push(`${role}`, `${uuid}`);
+  }
+  if (imgUrl) {
+    query += ` image=$1, updated_at = now() where uuid=$2 returning uuid, image`;
+    values.push(`/imgs/${imgUrl}`, `${uuid}`);
   }
   return db.query(query, values);
 };

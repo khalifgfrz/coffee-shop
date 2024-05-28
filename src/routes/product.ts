@@ -1,5 +1,7 @@
 import { Router } from "express";
-import { createNewProduct, deleteExtProduct, getDetailProduct, getProduct, updateDetailProduct, updateProduct } from "../handlers/product";
+import { createNewProduct, deleteExtProduct, getDetailProduct, getProduct, updateDetailProduct } from "../handlers/product";
+import { authorization } from "../middlewares/authorization";
+import { multiUploader, singleUploader } from "../middlewares/upload";
 
 const productRouter = Router();
 
@@ -10,12 +12,10 @@ productRouter.get("/", getProduct);
 
 productRouter.get("/:uuid", getDetailProduct);
 // Menambah Produk Baru
-productRouter.post("/", createNewProduct);
+productRouter.post("/", authorization(["admin"]), singleUploader("image"), createNewProduct);
 // Menghapus Produk
-productRouter.delete("/:uuid", deleteExtProduct);
+productRouter.delete("/:uuid", authorization(["admin"]), deleteExtProduct);
 // Mengupdate Produk
-productRouter.put("/:uuid", updateProduct);
-
-productRouter.patch("/:uuid", updateDetailProduct);
+productRouter.patch("/:uuid", authorization(["admin"]), singleUploader("image"), updateDetailProduct);
 
 export default productRouter;

@@ -1,5 +1,6 @@
 import { Router } from "express";
-import { createNewPromo, deleteExtPromo, getDetailPromo, getPromo, updateDetailPromo, updatePromo } from "../handlers/promo";
+import { createNewPromo, deleteExtPromo, getDetailPromo, getPromo, updateDetailPromo } from "../handlers/promo";
+import { authorization } from "../middlewares/authorization";
 
 const promoRouter = Router();
 
@@ -9,12 +10,10 @@ promoRouter.get("/", getPromo);
 promoRouter.get("/:uuid", getDetailPromo);
 
 // Menambah Promo Baru
-promoRouter.post("/", createNewPromo);
+promoRouter.post("/", authorization(["admin"]), createNewPromo);
 // Menghapus Promo
-promoRouter.delete("/:uuid", deleteExtPromo);
+promoRouter.delete("/:uuid", authorization(["admin"]), deleteExtPromo);
 // Mengupdate Promo
-promoRouter.put("/:uuid", updatePromo);
-
-promoRouter.patch("/:uuid", updateDetailPromo);
+promoRouter.patch("/:uuid", authorization(["admin"]), updateDetailPromo);
 
 export default promoRouter;

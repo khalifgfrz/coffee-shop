@@ -30,14 +30,6 @@ export const deletePromo = (uuid: string): Promise<QueryResult<IDataPromo>> => {
   return db.query(query, values);
 };
 
-export const updateAllPromo = (body: IPromoBody, uuid: string): Promise<QueryResult<IDataPromo>> => {
-  const query = `update promo set promo_name = $1, discount_type = $2, flat_amount = $3, percent_amount = $4, updated_at = now() where uuid = $5
-    returning promo_name, discount_type, flat_amount, percent_amount`;
-  const { promo_name, discount_type, flat_amount, percent_amount } = body;
-  const values = [promo_name, discount_type, flat_amount, percent_amount, uuid];
-  return db.query(query, values);
-};
-
 export const updateOnePromo = (body: IPromoBody, uuid: string): Promise<QueryResult<IDataPromo>> => {
   let query = `update promo set`;
   const { promo_name, discount_type, flat_amount, percent_amount } = body;
