@@ -6,7 +6,7 @@ import { IAuthResponse } from "../models/response";
 import { IPayload } from "../models/payload";
 
 export const jwtOptions: SignOptions = {
-  expiresIn: "5m", // token akan hangus dalam 5 menit
+  expiresIn: "1h", // token akan hangus dalam 1 jam
   issuer: process.env.JWT_ISSUER,
 };
 

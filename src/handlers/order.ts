@@ -4,6 +4,7 @@ import { createOrder, deleteOrder, getAllOrder, getOneOrder, getTotalOrder, upda
 import { IOrderParams, IOrderBody, IOrderQuery } from "../models/order";
 import getOrderLink from "../helpers/getOrderLink";
 import { IOrderResponse } from "../models/response";
+import db from "../configs/pg";
 
 export const getOrder = async (req: Request<{}, {}, {}, IOrderQuery>, res: Response<IOrderResponse>) => {
   try {
@@ -66,12 +67,26 @@ export const getDetailOrder = async (req: Request<IOrderParams>, res: Response) 
 };
 
 export const createNewOrder = async (req: Request<{}, {}, IOrderBody>, res: Response) => {
+  const { product_ids, promo_id, user_id } = req.body;
   try {
-    const result = await createOrder(req.body);
-    return res.status(201).json({
-      msg: "success",
-      data: result.rows,
-    });
+    const client = await db.connect();
+    try {
+      await client.query("BEGIN");
+
+      const result = await createOrder(product_ids, promo_id, user_id, client);
+
+      await client.query("COMMIT");
+
+      return res.status(201).json({
+        msg: "success",
+        data: result.rows,
+      });
+    } catch (err) {
+      await client.query("ROLLBACK");
+      throw err;
+    } finally {
+      client.release();
+    }
   } catch (err) {
     if (err instanceof Error) {
       console.log(err.message);
@@ -110,8 +125,9 @@ export const deleteExtOrder = async (req: Request<IOrderParams>, res: Response) 
 
 export const updatedOrder = async (req: Request<IOrderParams, {}, IOrderBody>, res: Response) => {
   try {
+    const { status } = req.body;
     const { uuid } = req.params;
-    const result = await updateOrder(req.body, uuid);
+    const result = await updateOrder(status, uuid);
     if (result.rowCount === 0) {
       return res.status(404).json({
         msg: "Pesanan tidak ditemukan",

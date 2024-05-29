@@ -1,7 +1,7 @@
-import { QueryResult } from "pg";
+import { Pool, PoolClient, QueryResult } from "pg";
 
 import db from "../configs/pg";
-import { IDataOrder, IOrderBody, IOrderQuery } from "../models/order";
+import { IDataOrder, IOrderQuery } from "../models/order";
 
 export const getAllOrder = ({ page }: IOrderQuery): Promise<QueryResult<IDataOrder>> => {
   let query = `select ol.id, ol.no_order, ol."date", p.product_name, ol.status, p.price, p2.promo_name from order_list ol
@@ -25,12 +25,16 @@ export const getOneOrder = (no_order: string): Promise<QueryResult<IDataOrder>> 
   return db.query(query, values);
 };
 
-export const createOrder = (body: IOrderBody): Promise<QueryResult<IDataOrder>> => {
-  const query = `insert into order_list (product_id, promo_id, user_id, status) values ($1,$2,$3,$4)
-  returning no_order, product_id, promo_id, user_id, status`;
-  const { product_id, promo_id, user_id, status } = body;
-  const values = [product_id, promo_id, user_id, status];
-  return db.query(query, values);
+export const createOrder = (product_ids: number[], promo_id: number, user_id: number, pgConn: Pool | PoolClient): Promise<QueryResult<IDataOrder>> => {
+  let query = `insert into order_list (product_id, promo_id, user_id) values`;
+  const values = [];
+  for (const product_id of product_ids) {
+    if (values.length) query += ",";
+    query += `($${values.length + 1}, $${values.length + 2}, $${values.length + 3})`;
+    values.push(product_id, promo_id, user_id);
+  }
+  query += " returning product_id, promo_id, user_id";
+  return pgConn.query(query, values);
 };
 
 export const deleteOrder = (no_order: string): Promise<QueryResult<IDataOrder>> => {
@@ -40,10 +44,9 @@ export const deleteOrder = (no_order: string): Promise<QueryResult<IDataOrder>> 
   return db.query(query, values);
 };
 
-export const updateOrder = (body: IOrderBody, no_order: string): Promise<QueryResult<IDataOrder>> => {
+export const updateOrder = (status: string, no_order: string): Promise<QueryResult<IDataOrder>> => {
   const query = `update order_list set status = $1, updated_at = now() where no_order = $2
   returning no_order, product_id, promo_id, user_id, status`;
-  const { status } = body;
   const values = [status, no_order];
   return db.query(query, values);
 };

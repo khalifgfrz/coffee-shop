@@ -89,9 +89,9 @@ export const createNewUser = async (req: Request<{}, {}, IUserBody>, res: Respon
 };
 
 export const deleteExtUser = async (req: Request<IUserParams>, res: Response<IUserResponse>) => {
-  const { uuid } = req.params;
+  const { uuid } = req.userPayload as IPayload;
   try {
-    const result = await deleteUser(uuid);
+    const result = await deleteUser(uuid as string);
     if (result.rowCount === 0) {
       return res.status(404).json({
         msg: "User tidak ditemukan",
@@ -261,6 +261,31 @@ export const changePwd = async (req: Request<{ uuid: string }, {}, { pwd: string
           err: "User tidak ditemukan",
         });
       }
+      console.log(err.message);
+    }
+    return res.status(500).json({
+      msg: "Error",
+      err: "Internal Server Error",
+    });
+  }
+};
+
+export const deletedUser = async (req: Request<IUserParams>, res: Response<IUserResponse>) => {
+  const { uuid } = req.params;
+  try {
+    const result = await deleteUser(uuid);
+    if (result.rowCount === 0) {
+      return res.status(404).json({
+        msg: "User tidak ditemukan",
+        data: [],
+      });
+    }
+    return res.status(200).json({
+      msg: "Success",
+      data: result.rows,
+    });
+  } catch (err) {
+    if (err instanceof Error) {
       console.log(err.message);
     }
     return res.status(500).json({

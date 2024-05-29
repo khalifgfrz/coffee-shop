@@ -12,10 +12,10 @@ productRouter.get("/", getProduct);
 
 productRouter.get("/:uuid", getDetailProduct);
 // Menambah Produk Baru
-productRouter.post("/", authorization(["admin"]), multiUploader("image", 3), createNewProduct);
+productRouter.post("/", authorization(["admin"]), singleUploader("image"), createNewProduct);
 // Menghapus Produk
 productRouter.delete("/:uuid", authorization(["admin"]), deleteExtProduct);
 // Mengupdate Produk
-productRouter.patch("/:uuid", authorization(["admin"]), multiUploader("image", 3), updateDetailProduct);
+productRouter.patch("/:uuid", authorization(["admin"]), singleUploader("image"), updateDetailProduct);
 
 export default productRouter;

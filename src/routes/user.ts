@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { createNewUser, getDetailUser, getUser, deleteExtUser, updateDetailUser, registerNewUser, loginUser, setPwd, changePwd } from "../handlers/user";
+import { createNewUser, getDetailUser, getUser, deleteExtUser, updateDetailUser, registerNewUser, loginUser, setPwd, changePwd, deletedUser } from "../handlers/user";
 import { authorization } from "../middlewares/authorization";
 import { singleUploader } from "../middlewares/upload";
 
@@ -19,15 +19,18 @@ userRouter.post("/register", registerNewUser);
 userRouter.post("/login", loginUser);
 
 // Menghapus User
-userRouter.delete("/:uuid", deleteExtUser);
+userRouter.delete("/delete", authorization(["admin", "user"]), deleteExtUser);
+
+// Menghapus User Dari Admin
+userRouter.delete("/:uuid", authorization(["admin"]), deletedUser);
 
 // Mengupdate User
 userRouter.patch("/settings", authorization(["admin", "user"]), singleUploader("image"), updateDetailUser);
 
-// Change Pwd
+// Edit Pwd
 userRouter.patch("/resetpassword", authorization(["admin", "user"]), changePwd);
 
-// Edit Pwd User
-userRouter.patch("/:uuid/pwd", setPwd);
+// Edit Pwd Dari Admin
+userRouter.patch("/:uuid/pwd", authorization(["admin"]), setPwd);
 
 export default userRouter;
