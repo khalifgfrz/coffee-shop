@@ -14,3 +14,5 @@ export type QueryOrderParams = IOrderQuery;
 // product params
 export type AppProductParams = ParamsDictionary | IProductParams;
 export type QueryProductParams = IOrderQuery;
+
+export type AppParams = ParamsDictionary;

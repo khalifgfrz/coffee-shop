@@ -6,6 +6,7 @@ import cors, { CorsOptions } from "cors";
 dotenv.config();
 
 import router from "./src/routes";
+import { MulterError } from "multer";
 
 const app = express();
 

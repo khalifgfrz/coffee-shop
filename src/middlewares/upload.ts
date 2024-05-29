@@ -1,12 +1,14 @@
-import multer, { Field, MulterError, Options, diskStorage } from "multer";
+import multer, { Field, Options, diskStorage } from "multer";
 import path from "path";
+import { NextFunction, Request, Response } from "express-serve-static-core";
+import { AppParams } from "../models/params";
+import { IAuthResponse } from "../models/response";
 
 const multerDisk = diskStorage({
   destination: (req, file, cb) => {
     cb(null, "src/public/imgs");
   },
   filename: (req, file, cb) => {
-    // misal: image-timestamp.{jpg|png|jpeg}
     const extName = path.extname(file.originalname);
     const newFileName = `image-${Date.now()}${extName}`;
     cb(null, newFileName);
@@ -16,20 +18,42 @@ const multerDisk = diskStorage({
 const multerOptions: Options = {
   storage: multerDisk,
   limits: {
-    fileSize: 1e6, // 1000000
+    fileSize: 1e6, // 1,000,000 bytes (1MB)
   },
   fileFilter: (req, file, cb) => {
-    // const allowedExt = ["jpg", "png", "jpeg"];
-    const allowedExtRe = /jpg|png|jpeg/gi;
+    const allowedExtRe = /\.(jpg|png|jpeg)$/i;
     const extName = path.extname(file.originalname);
-    // if (!allowedExt.includes(extName.toLowerCase())) return cb(null, false);
-    if (!allowedExtRe.test(extName)) return cb(new Error("Incorrect File"));
+    if (!allowedExtRe.test(extName)) {
+      return cb(new Error("Only .jpg, .png, or .jpeg files are allowed!"));
+    }
     cb(null, true);
   },
 };
 
 const uploader = multer(multerOptions);
 
-export const singleUploader = (fieldName: string) => uploader.single(fieldName);
-export const multiUploader = (fieldName: string, maxCount: number) => uploader.array(fieldName, maxCount);
+export const singleUploader = (fieldName: string) => (req: Request<AppParams>, res: Response<IAuthResponse>, next: NextFunction) => {
+  const uploaders = uploader.single(fieldName);
+  uploaders(req, res, function (err) {
+    if (err instanceof Error) {
+      return res.status(403).json({
+        msg: "Forbidden",
+        err: err.message,
+      });
+    }
+    next();
+  });
+};
+export const multiUploader = (fieldName: string, maxCount: number) => (req: Request<AppParams>, res: Response<IAuthResponse>, next: NextFunction) => {
+  const uploaders = uploader.array(fieldName, maxCount);
+  uploaders(req, res, function (err) {
+    if (err instanceof Error) {
+      return res.status(403).json({
+        msg: "Forbidden",
+        err: err.message,
+      });
+    }
+    next();
+  });
+};
 export const multiFieldUploader = (fieldConfig: Field[]) => uploader.fields(fieldConfig);
