@@ -44,16 +44,3 @@ export const singleUploader = (fieldName: string) => (req: Request<AppParams>, r
     next();
   });
 };
-export const multiUploader = (fieldName: string, maxCount: number) => (req: Request<AppParams>, res: Response<IAuthResponse>, next: NextFunction) => {
-  const uploaders = uploader.array(fieldName, maxCount);
-  uploaders(req, res, function (err) {
-    if (err instanceof Error) {
-      return res.status(403).json({
-        msg: "Forbidden",
-        err: err.message,
-      });
-    }
-    next();
-  });
-};
-export const multiFieldUploader = (fieldConfig: Field[]) => uploader.fields(fieldConfig);

@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { createNewProduct, deleteExtProduct, getDetailProduct, getProduct, updateDetailProduct } from "../handlers/product";
 import { authorization } from "../middlewares/authorization";
-import { multiUploader, singleUploader } from "../middlewares/upload";
+import { singleUploader } from "../middlewares/upload";
 
 const productRouter = Router();
 
