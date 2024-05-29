@@ -1,4 +1,4 @@
-import multer, { Field, Options, diskStorage } from "multer";
+import multer, { Field, MulterError, Options, diskStorage } from "multer";
 import path from "path";
 
 const multerDisk = diskStorage({
