@@ -179,11 +179,11 @@ export const loginUser = async (req: Request<{}, {}, IUserLoginBody>, res: Respo
   }
 };
 
-export const updateDetailUser = async (req: Request<{ uuid: string }, {}, IUserBody>, res: Response<IUserResponse>) => {
-  const { uuid } = req.userPayload as IPayload;
+export const updateDetailUser = async (req: Request<{ email: string }, {}, IUserBody>, res: Response<IUserResponse>) => {
+  const { email } = req.userPayload as IPayload;
   const { file } = req;
   try {
-    const result = await updateOneUser(req.body, uuid as string, file?.filename);
+    const result = await updateOneUser(req.body, email as string, file?.filename);
     if (result.rowCount === 0) {
       return res.status(404).json({
         msg: "User tidak ditemukan",
@@ -196,7 +196,7 @@ export const updateDetailUser = async (req: Request<{ uuid: string }, {}, IUserB
     });
   } catch (err) {
     if (err instanceof Error) {
-      if (/(invalid(.)+uuid(.)+)/g.test(err.message)) {
+      if (/(invalid(.)+email(.)+)/g.test(err.message)) {
         return res.status(401).json({
           msg: "Error",
           err: "User tidak ditemukan",

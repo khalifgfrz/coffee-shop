@@ -75,45 +75,57 @@ export const updateOneProduct = (body: IProductBody, uuid: string, imgUrl?: stri
   let query = `update product set`;
   const { product_name, price, category, description, product_size, method, stock } = body;
   const values = [];
+  let condition = false;
+
   if (product_name) {
-    query += ` product_name = $1, updated_at = now() where uuid = $2
-    returning product_name, price, category, description, product_size, method, stock`;
-    values.push(`${product_name}`, `${uuid}`);
+    query += ` product_name = $${values.length + 1}`;
+    values.push(`${product_name}`);
+    condition = true;
   }
   if (price) {
-    query += ` price = $1, updated_at = now() where uuid = $2
-    returning product_name, price, category, description, product_size, method, stock`;
-    values.push(`${price}`, `${uuid}`);
+    query += condition ? "," : "";
+    query += ` price = $${values.length + 1}`;
+    values.push(`${price}`);
+    condition = true;
   }
   if (category) {
-    query += ` category = $1, updated_at = now() where uuid = $2
-    returning product_name, price, category, description, product_size, method, stock`;
-    values.push(`${category}`, `${uuid}`);
+    query += condition ? "," : "";
+    query += ` category = $${values.length + 1}`;
+    values.push(`${category}`);
+    condition = true;
   }
   if (description) {
-    query += ` description = $1, updated_at = now() where uuid = $2
-    returning product_name, price, category, description, product_size, method, stock`;
-    values.push(`${description}`, `${uuid}`);
+    query += condition ? "," : "";
+    query += ` description = $${values.length + 1}`;
+    values.push(`${description}`);
+    condition = true;
   }
   if (product_size) {
-    query += ` product_size = $1, updated_at = now() where uuid = $2
-    returning product_name, price, category, description, product_size, method, stock`;
-    values.push(`${product_size}`, `${uuid}`);
+    query += condition ? "," : "";
+    query += ` product_size = $${values.length + 1}`;
+    values.push(`${product_size}`);
+    condition = true;
   }
   if (method) {
-    query += ` method = $1, updated_at = now() where uuid = $2
-    returning product_name, price, category, description, product_size, method, stock`;
-    values.push(`${method}`, `${uuid}`);
+    query += condition ? "," : "";
+    query += ` method = $${values.length + 1}`;
+    values.push(`${method}`);
+    condition = true;
   }
   if (stock) {
-    query += ` stock = $1, updated_at = now() where uuid = $2
-    returning product_name, price, category, description, product_size, method, stock`;
-    values.push(`${stock}`, `${uuid}`);
+    query += condition ? "," : "";
+    query += ` stock = $${values.length + 1}`;
+    values.push(`${stock}`);
+    condition = true;
   }
   if (imgUrl) {
-    query += ` image=$1, updated_at = now() where uuid=$2 returning uuid, image`;
-    values.push(`/imgs/${imgUrl}`, `${uuid}`);
+    query += condition ? "," : "";
+    query += ` image=$${values.length + 1}`;
+    values.push(`/imgs/${imgUrl}`);
+    condition = true;
   }
+  query += `, updated_at = now() where uuid = $${values.length + 1} returning product_name, price, category, description, product_size, method, stock, image`;
+  values.push(`${uuid}`);
   return db.query(query, values);
 };
 

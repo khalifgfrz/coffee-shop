@@ -55,34 +55,43 @@ export const deleteUserFromAdmin = (uuid: string): Promise<QueryResult<IDataUser
   return db.query(query, values);
 };
 
-export const updateOneUser = (body: IUserBody, uuid: string, imgUrl?: string): Promise<QueryResult<IDataUser>> => {
+export const updateOneUser = (body: IUserBody, emailparams: string, imgUrl?: string): Promise<QueryResult<IDataUser>> => {
   let query = `update "user" set`;
   const { full_name, phone, address, email } = body;
   const values = [];
+  let condition = false;
+
   if (full_name) {
-    query += ` full_name = $1, updated_at = now() where uuid = $2
-    returning full_name, phone, address, email`;
-    values.push(`${full_name}`, `${uuid}`);
+    query += ` full_name = $${values.length + 1}`;
+    values.push(`${full_name}`);
+    condition = true;
   }
   if (phone) {
-    query += ` phone = $1, updated_at = now() where uuid = $2
-    returning full_name, phone, address, email, role`;
-    values.push(`${phone}`, `${uuid}`);
+    query += condition ? "," : "";
+    query += ` phone = $${values.length + 1}`;
+    values.push(`${phone}`);
+    condition = true;
   }
   if (address) {
-    query += ` address = $1, updated_at = now() where uuid = $2
-    returning full_name, phone, address, email, role`;
-    values.push(`${address}`, `${uuid}`);
+    query += condition ? "," : "";
+    query += ` address = $${values.length + 1}`;
+    values.push(`${address}`);
+    condition = true;
   }
   if (email) {
-    query += ` email = $1, updated_at = now() where uuid = $2
-    returning full_name, phone, address, email, role`;
-    values.push(`${email}`, `${uuid}`);
+    query += condition ? "," : "";
+    query += ` email = $${values.length + 1}`;
+    values.push(`${email}`);
+    condition = true;
   }
   if (imgUrl) {
-    query += ` image=$1, updated_at = now() where uuid=$2 returning uuid, image`;
-    values.push(`/imgs/${imgUrl}`, `${uuid}`);
+    query += condition ? "," : "";
+    query += ` image=$${values.length + 1}`;
+    values.push(`/imgs/${imgUrl}`);
+    condition = true;
   }
+  query += `, updated_at = now() where email = $${values.length + 1} returning full_name, phone, address, email, image`;
+  values.push(`${emailparams}`);
   return db.query(query, values);
 };
 

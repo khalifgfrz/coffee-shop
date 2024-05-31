@@ -70,7 +70,7 @@ export const createNewProduct = async (req: Request<{}, {}, IProductBody>, res: 
   if (!file)
     return res.status(400).json({
       msg: "File not found",
-      err: "Only receive input for image files (JPG, PNG, JPEG)",
+      err: "Must input image files (JPG, PNG, JPEG)",
     });
   try {
     const result = await createProduct(req.body, file.filename);

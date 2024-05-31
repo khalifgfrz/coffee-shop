@@ -34,25 +34,34 @@ export const updateOnePromo = (body: IPromoBody, uuid: string): Promise<QueryRes
   let query = `update promo set`;
   const { promo_name, discount_type, flat_amount, percent_amount } = body;
   const values = [];
+  let condition = false;
+
   if (promo_name) {
-    query += ` promo_name = $1, updated_at = now() where uuid = $2
-    returning promo_name, discount_type, flat_amount, percent_amount`;
-    values.push(`${promo_name}`, `${uuid}`);
+    query += condition ? "," : "";
+    query += ` promo_name = $${values.length + 1}`;
+    values.push(`${promo_name}`);
+    condition = true;
   }
   if (discount_type) {
-    query += ` discount_type = $1, updated_at = now() where uuid = $2
-    returning promo_name, discount_type, flat_amount, percent_amount`;
-    values.push(`${discount_type}`, `${uuid}`);
+    query += condition ? "," : "";
+    query += ` discount_type = $${values.length + 1}`;
+    values.push(`${discount_type}`);
+    condition = true;
   }
   if (flat_amount) {
-    query += ` flat_amount = $1, updated_at = now() where uuid = $2
-    returning promo_name, discount_type, flat_amount, percent_amount`;
-    values.push(`${flat_amount}`, `${uuid}`);
+    query += condition ? "," : "";
+    query += ` flat_amount = $${values.length + 1}`;
+    values.push(`${flat_amount}`);
+    condition = true;
   }
   if (percent_amount) {
-    query += ` percent_amount = $1, updated_at = now() where uuid = $2
-    returning promo_name, discount_type, flat_amount, percent_amount`;
-    values.push(`${percent_amount}`, `${uuid}`);
+    query += condition ? "," : "";
+    query += ` percent_amount = $${values.length + 1}`;
+    values.push(`${percent_amount}`);
+    condition = true;
   }
+  query += `, updated_at = now() where uuid = $${values.length + 1}
+  returning promo_name, discount_type, flat_amount, percent_amount`;
+  values.push(`${uuid}`);
   return db.query(query, values);
 };
