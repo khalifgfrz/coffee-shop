@@ -20,7 +20,7 @@ const getProductLink = (req: Request<AppProductParams, {}, {}, QueryOrderParams>
     return str.join("&");
   };
   const newUrl = (url: string): string => {
-    if (url == "/") return "1";
+    if (url == "/") return "";
     return url;
   };
   return `${protocol}://${hostname}:${process.env.PORT}${newUrl(baseUrl)}${newUrl(path)}?${serialize(newQuery)}`;

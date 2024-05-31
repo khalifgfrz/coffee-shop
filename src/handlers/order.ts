@@ -41,7 +41,7 @@ export const getOrder = async (req: Request<{}, {}, {}, IOrderQuery>, res: Respo
   }
 };
 
-export const getDetailOrder = async (req: Request<IOrderParams>, res: Response) => {
+export const getDetailOrder = async (req: Request<IOrderParams>, res: Response<IOrderResponse>) => {
   const { uuid } = req.params;
   try {
     const result = await getOneOrder(uuid);
@@ -66,7 +66,7 @@ export const getDetailOrder = async (req: Request<IOrderParams>, res: Response) 
   }
 };
 
-export const createNewOrder = async (req: Request<{}, {}, IOrderBody>, res: Response) => {
+export const createNewOrder = async (req: Request<{}, {}, IOrderBody>, res: Response<IOrderResponse>) => {
   const { product_ids, promo_id, user_id } = req.body;
   try {
     const client = await db.connect();
@@ -98,7 +98,7 @@ export const createNewOrder = async (req: Request<{}, {}, IOrderBody>, res: Resp
   }
 };
 
-export const deleteExtOrder = async (req: Request<IOrderParams>, res: Response) => {
+export const deleteExtOrder = async (req: Request<IOrderParams>, res: Response<IOrderResponse>) => {
   const { uuid } = req.params;
   try {
     const result = await deleteOrder(uuid);
@@ -123,7 +123,7 @@ export const deleteExtOrder = async (req: Request<IOrderParams>, res: Response) 
   }
 };
 
-export const updatedOrder = async (req: Request<IOrderParams, {}, IOrderBody>, res: Response) => {
+export const updatedOrder = async (req: Request<IOrderParams, {}, IOrderBody>, res: Response<IOrderResponse>) => {
   try {
     const { status } = req.body;
     const { uuid } = req.params;

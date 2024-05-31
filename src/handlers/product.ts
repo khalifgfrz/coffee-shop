@@ -3,8 +3,9 @@ import { Request, Response } from "express-serve-static-core";
 import { getAllProduct, getOneProduct, createProduct, deleteProduct, updateOneProduct, getTotalProduct } from "../repositories/product";
 import { IProductBody, IProductParams, IProductQuery } from "../models/product";
 import getProductLink from "../helpers/getProductLink";
+import { IProductResponse } from "../models/response";
 
-export const getProduct = async (req: Request<{}, {}, {}, IProductQuery>, res: Response) => {
+export const getProduct = async (req: Request<{}, {}, {}, IProductQuery>, res: Response<IProductResponse>) => {
   try {
     const result = await getAllProduct(req.query);
     if (result.rowCount === 0) {
@@ -39,7 +40,7 @@ export const getProduct = async (req: Request<{}, {}, {}, IProductQuery>, res: R
   }
 };
 
-export const getDetailProduct = async (req: Request<IProductParams>, res: Response) => {
+export const getDetailProduct = async (req: Request<IProductParams>, res: Response<IProductResponse>) => {
   const { uuid } = req.params;
   try {
     const result = await getOneProduct(uuid);
@@ -64,7 +65,7 @@ export const getDetailProduct = async (req: Request<IProductParams>, res: Respon
   }
 };
 
-export const createNewProduct = async (req: Request<{}, {}, IProductBody>, res: Response) => {
+export const createNewProduct = async (req: Request<{}, {}, IProductBody>, res: Response<IProductResponse>) => {
   const { file } = req;
   if (!file)
     return res.status(400).json({
@@ -94,7 +95,7 @@ export const createNewProduct = async (req: Request<{}, {}, IProductBody>, res: 
   }
 };
 
-export const deleteExtProduct = async (req: Request<IProductParams>, res: Response) => {
+export const deleteExtProduct = async (req: Request<IProductParams>, res: Response<IProductResponse>) => {
   const { uuid } = req.params;
   try {
     const result = await deleteProduct(uuid);
@@ -119,18 +120,13 @@ export const deleteExtProduct = async (req: Request<IProductParams>, res: Respon
   }
 };
 
-export const updateDetailProduct = async (req: Request<{ uuid: string }, {}, IProductBody>, res: Response) => {
+export const updateDetailProduct = async (req: Request<{ uuid: string }, {}, IProductBody>, res: Response<IProductResponse>) => {
   const {
     file,
     params: { uuid },
   } = req;
-  if (!file)
-    return res.status(400).json({
-      msg: "File not found",
-      err: "Only receive input for image files (JPG, PNG, JPEG)",
-    });
   try {
-    const result = await updateOneProduct(req.body, uuid, file.filename);
+    const result = await updateOneProduct(req.body, uuid, file?.filename);
     if (result.rowCount === 0) {
       return res.status(404).json({
         msg: "Produk tidak ditemukan",

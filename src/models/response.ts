@@ -1,5 +1,6 @@
 import { IDataOrder } from "./order";
 import { IDataProduct } from "./product";
+import { IDataPromo } from "./promo";
 import { IDataUser } from "./user";
 
 interface IPaginationMeta {
@@ -27,6 +28,10 @@ export interface IOrderResponse extends IBasicResponse {
 
 export interface IProductResponse extends IBasicResponse {
   data?: IDataProduct[];
+}
+
+export interface IPromoResponse extends IBasicResponse {
+  data?: IDataPromo[];
 }
 
 export interface IAuthResponse extends IBasicResponse {

@@ -35,18 +35,28 @@ Aplikasi Coffee Shop ini dibangun dengan tujuan untuk memudahkan pengguna dalam 
 Pastikan Anda sudah menginstall Node.js dan npm di komputer Anda.
 
 ```bash
-node --version
-npm --version
+$ node --version
+$ npm --version
 ```
 
 ### Instalasi
 
+1. Clone repositori ini
+
 ```bash
-express => npm i express
-pg => npm i pg
-typescript (dev) => npm i -D typescript
-create project node.js => npm init
-create tsconfig.json => npx tsc --init
+$ git clone https://github.com/khalifgfrz/coffee-shop.git
+```
+
+2. Install dependensi
+
+```bash
+$ npm install
+```
+
+3. Jalankan Aplikasi
+
+```bash
+$ npm start
 ```
 
 ## Kontak

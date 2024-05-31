@@ -24,7 +24,7 @@ const multerOptions: Options = {
     const allowedExtRe = /\.(jpg|png|jpeg)$/i;
     const extName = path.extname(file.originalname);
     if (!allowedExtRe.test(extName)) {
-      return cb(new Error("Only .jpg, .png, or .jpeg files are allowed!"));
+      return cb(new Error("Incorrect File"));
     }
     cb(null, true);
   },
@@ -36,8 +36,8 @@ export const singleUploader = (fieldName: string) => (req: Request<AppParams>, r
   const uploaders = uploader.single(fieldName);
   uploaders(req, res, function (err) {
     if (err instanceof Error) {
-      return res.status(403).json({
-        msg: "Forbidden",
+      return res.status(400).json({
+        msg: "Bad Request",
         err: err.message,
       });
     }

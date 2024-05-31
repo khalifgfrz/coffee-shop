@@ -27,7 +27,7 @@ export interface IUserRegisterBody extends IUserBody {
 }
 
 export interface IUserLoginBody {
-  uuid: string;
+  email: string;
   role: string;
   pwd: string;
 }

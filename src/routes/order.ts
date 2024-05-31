@@ -7,9 +7,9 @@ const orderRouter = Router();
 // CRUD
 orderRouter.get("/", authorization(["admin"]), getOrder);
 
-orderRouter.get("/:no_order", authorization(["admin", "user"]), getDetailOrder);
+orderRouter.get("/:no_order", authorization(), getDetailOrder);
 // Menambah Produk Baru
-orderRouter.post("/", authorization(["admin", "user"]), createNewOrder);
+orderRouter.post("/", authorization(), createNewOrder);
 // Menghapus Produk
 orderRouter.delete("/:no_order", authorization(["admin"]), deleteExtOrder);
 // Mengupdate Produk

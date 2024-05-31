@@ -7,7 +7,7 @@ const userRouter = Router();
 
 // CRUD
 userRouter.get("/datauser", authorization(["admin"]), getUser);
-userRouter.get("/", authorization(["admin", "user"]), getDetailUser);
+userRouter.get("/", authorization(), getDetailUser);
 
 // Menambah User Baru
 userRouter.post("/createuser", authorization(["admin"]), createNewUser);
@@ -19,16 +19,16 @@ userRouter.post("/register", registerNewUser);
 userRouter.post("/login", loginUser);
 
 // Menghapus User
-userRouter.delete("/delete", authorization(["admin", "user"]), deleteExtUser);
+userRouter.delete("/delete", authorization(), deleteExtUser);
 
 // Menghapus User Dari Admin
 userRouter.delete("/:uuid", authorization(["admin"]), deletedUser);
 
 // Mengupdate User
-userRouter.patch("/settings", authorization(["admin", "user"]), singleUploader("image"), updateDetailUser);
+userRouter.patch("/settings", authorization(), singleUploader("image"), updateDetailUser);
 
 // Edit Pwd
-userRouter.patch("/resetpassword", authorization(["admin", "user"]), changePwd);
+userRouter.patch("/resetpassword", authorization(), changePwd);
 
 // Edit Pwd Dari Admin
 userRouter.patch("/:uuid/pwd", authorization(["admin"]), setPwd);

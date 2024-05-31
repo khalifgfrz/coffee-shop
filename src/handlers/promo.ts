@@ -2,8 +2,9 @@ import { Request, Response } from "express-serve-static-core";
 
 import { getOnePromo, createPromo, getAllPromo, deletePromo, updateOnePromo } from "../repositories/promo";
 import { IPromoBody, IPromoParams } from "../models/promo";
+import { IPromoResponse } from "../models/response";
 
-export const getPromo = async (req: Request, res: Response) => {
+export const getPromo = async (req: Request, res: Response<IPromoResponse>) => {
   try {
     const result = await getAllPromo();
     if (result.rows.length === 0) {
@@ -27,7 +28,7 @@ export const getPromo = async (req: Request, res: Response) => {
   }
 };
 
-export const getDetailPromo = async (req: Request<IPromoParams>, res: Response) => {
+export const getDetailPromo = async (req: Request<IPromoParams>, res: Response<IPromoResponse>) => {
   const { uuid } = req.params;
   try {
     const result = await getOnePromo(uuid);
@@ -52,7 +53,7 @@ export const getDetailPromo = async (req: Request<IPromoParams>, res: Response) 
   }
 };
 
-export const createNewPromo = async (req: Request<{}, {}, IPromoBody>, res: Response) => {
+export const createNewPromo = async (req: Request<{}, {}, IPromoBody>, res: Response<IPromoResponse>) => {
   try {
     const result = await createPromo(req.body);
     return res.status(201).json({
@@ -70,7 +71,7 @@ export const createNewPromo = async (req: Request<{}, {}, IPromoBody>, res: Resp
   }
 };
 
-export const deleteExtPromo = async (req: Request<IPromoParams>, res: Response) => {
+export const deleteExtPromo = async (req: Request<IPromoParams>, res: Response<IPromoResponse>) => {
   const { uuid } = req.params;
   try {
     const result = await deletePromo(uuid);
@@ -95,7 +96,7 @@ export const deleteExtPromo = async (req: Request<IPromoParams>, res: Response) 
   }
 };
 
-export const updateDetailPromo = async (req: Request<IPromoParams, {}, IPromoBody>, res: Response) => {
+export const updateDetailPromo = async (req: Request<IPromoParams, {}, IPromoBody>, res: Response<IPromoResponse>) => {
   const { uuid } = req.params;
   try {
     const result = await updateOnePromo(req.body, uuid);
