@@ -57,23 +57,23 @@ export const getOneProduct = (uuid: string): Promise<QueryResult<IDataProduct>> 
 };
 
 export const createProduct = (body: IProductBody, imgUrl?: string): Promise<QueryResult<IDataProduct>> => {
-  const query = `insert into product (product_name, price, category, description, product_size, method, stock, image) values ($1,$2,$3,$4,$5,$6,$7,$8)
-  returning product_name, price, category, description, product_size, method, stock, image`;
-  const { product_name, price, category, description, product_size, method, stock } = body;
-  const values = [product_name, price, category, description, product_size, method, stock, `/imgs/${imgUrl}`];
+  const query = `insert into product (product_name, price, category, description, stock, image) values ($1,$2,$3,$4,$5,$6)
+  returning product_name, price, category, description, stock, image`;
+  const { product_name, price, category, description, stock } = body;
+  const values = [product_name, price, category, description, stock, `/imgs/${imgUrl}`];
   return db.query(query, values);
 };
 
 export const deleteProduct = (uuid: string): Promise<QueryResult<IDataProduct>> => {
   const query = `delete from product where uuid=$1
-  returning product_name, price, category, description, product_size, method, stock`;
+  returning product_name, price, category, description, stock`;
   const values = [uuid];
   return db.query(query, values);
 };
 
 export const updateOneProduct = (body: IProductBody, uuid: string, imgUrl?: string): Promise<QueryResult<IDataProduct>> => {
   let query = `update product set`;
-  const { product_name, price, category, description, product_size, method, stock } = body;
+  const { product_name, price, category, description, stock } = body;
   const values = [];
   let condition = false;
 
@@ -100,18 +100,6 @@ export const updateOneProduct = (body: IProductBody, uuid: string, imgUrl?: stri
     values.push(`${description}`);
     condition = true;
   }
-  if (product_size) {
-    query += condition ? "," : "";
-    query += ` product_size = $${values.length + 1}`;
-    values.push(`${product_size}`);
-    condition = true;
-  }
-  if (method) {
-    query += condition ? "," : "";
-    query += ` method = $${values.length + 1}`;
-    values.push(`${method}`);
-    condition = true;
-  }
   if (stock) {
     query += condition ? "," : "";
     query += ` stock = $${values.length + 1}`;
@@ -124,7 +112,7 @@ export const updateOneProduct = (body: IProductBody, uuid: string, imgUrl?: stri
     values.push(`/imgs/${imgUrl}`);
     condition = true;
   }
-  query += `, updated_at = now() where uuid = $${values.length + 1} returning product_name, price, category, description, product_size, method, stock, image`;
+  query += `, updated_at = now() where uuid = $${values.length + 1} returning product_name, price, category, description, stock, image`;
   values.push(`${uuid}`);
   return db.query(query, values);
 };

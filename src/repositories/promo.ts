@@ -2,7 +2,7 @@ import { QueryResult } from "pg";
 
 import db from "../configs/pg";
 
-import { IDataPromo, IPromoBody, IPromoParams } from "../models/promo";
+import { IDataPromo, IPromoBody } from "../models/promo";
 
 export const getAllPromo = (): Promise<QueryResult<IDataPromo>> => {
   const query = `select * from promo`;
@@ -37,7 +37,6 @@ export const updateOnePromo = (body: IPromoBody, uuid: string): Promise<QueryRes
   let condition = false;
 
   if (promo_name) {
-    query += condition ? "," : "";
     query += ` promo_name = $${values.length + 1}`;
     values.push(`${promo_name}`);
     condition = true;

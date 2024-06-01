@@ -15,8 +15,6 @@ export interface IProductBody {
   price: number;
   category: string;
   description: string;
-  product_size: string;
-  method: string;
   stock: number;
 }
 
