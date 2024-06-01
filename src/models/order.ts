@@ -7,17 +7,19 @@ export interface IOrderQuery {
 }
 
 export interface IOrderBody {
-  product_ids: number[];
-  promo_id: number;
   user_id: number;
+  subtotal: number;
+  tax: number;
+  payment_id: number;
+  delivery_id: number;
+  promo_id: number;
   status: string;
+  grand_total: number;
 }
 
 export interface IDataOrder extends IOrderBody {
   id: number;
-  no_order: string;
-  date: string;
-  product_id: number;
+  uuid: string;
   created_at: string;
   updated_at: string | null;
 }

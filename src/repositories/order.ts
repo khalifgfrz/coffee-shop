@@ -4,8 +4,10 @@ import db from "../configs/pg";
 import { IDataOrder, IOrderQuery } from "../models/order";
 
 export const getAllOrder = ({ page }: IOrderQuery): Promise<QueryResult<IDataOrder>> => {
-  let query = `select ol.id, ol.no_order, ol."date", p.product_name, ol.status, p.price, p2.promo_name from order_list ol
-  join product p on ol.product_id = p.id
+  let query = `select ol.id, u.full_name, u.address, ol.subtotal, ol.tax, , u.phone, p.method as payment_method, d.method as shipping, p2.promo_name, ol.notes, ol.status, ol.grand_total from order_list ol
+  join "user" u on ol.user_id = u.id
+  join payments p on ol.payment_id = p.id
+  join deliveries d on ol.delivery_id = d.id
   join promo p2 on ol.promo_id = p2.id`;
   const values = [];
   if (page) {
