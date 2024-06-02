@@ -7,12 +7,12 @@ const orderRouter = Router();
 // CRUD
 orderRouter.get("/", authorization(["admin"]), getOrder);
 
-orderRouter.get("/:no_order", authorization(), getDetailOrder);
-// Menambah Produk Baru
-orderRouter.post("/", authorization(), createNewOrder);
-// Menghapus Produk
-orderRouter.delete("/:no_order", authorization(["admin"]), deleteExtOrder);
-// Mengupdate Produk
-orderRouter.patch("/:no_order", authorization(["admin"]), updatedOrder);
+orderRouter.get("/:uuid", authorization(), getDetailOrder);
+// Menambah Order Baru
+orderRouter.post("/new", authorization(), createNewOrder);
+// Menghapus Order
+orderRouter.delete("/:uuid", authorization(["admin"]), deleteExtOrder);
+// Mengupdate Order
+orderRouter.patch("/:uuid", authorization(["admin"]), updatedOrder);
 
 export default orderRouter;

@@ -1,10 +1,11 @@
 import { Request, Response } from "express-serve-static-core";
 
 import { createOrder, deleteOrder, getAllOrder, getOneOrder, getTotalOrder, updateOrder } from "../repositories/order";
-import { IOrderParams, IOrderBody, IOrderQuery } from "../models/order";
+import { IOrderParams, IOrderBody, IOrderQuery, IOrderWithDetailsBody } from "../models/order";
 import getOrderLink from "../helpers/getOrderLink";
-import { IOrderResponse } from "../models/response";
+import { IOrderResponse, IOrderWithDetailsResponse } from "../models/response";
 import db from "../configs/pg";
+import { createDetail } from "../repositories/orderDetails";
 
 export const getOrder = async (req: Request<{}, {}, {}, IOrderQuery>, res: Response<IOrderResponse>) => {
   try {
@@ -66,20 +67,23 @@ export const getDetailOrder = async (req: Request<IOrderParams>, res: Response<I
   }
 };
 
-export const createNewOrder = async (req: Request<{}, {}, IOrderBody>, res: Response<IOrderResponse>) => {
-  const { product_ids, promo_id, user_id } = req.body;
+export const createNewOrder = async (req: Request<{}, {}, IOrderWithDetailsBody>, res: Response<IOrderWithDetailsResponse>) => {
+  const { size_id, product_ids, qty } = req.body;
   try {
     const client = await db.connect();
     try {
       await client.query("BEGIN");
 
-      const result = await createOrder(product_ids, promo_id, user_id, client);
+      const orderResult = await createOrder(req.body, client);
+      const order_id = orderResult.rows[0].id;
+
+      const detailResult = await createDetail(order_id, size_id, product_ids, qty, client);
 
       await client.query("COMMIT");
 
       return res.status(201).json({
-        msg: "success",
-        data: result.rows,
+        msg: "Success",
+        data: [orderResult.rows, detailResult.rows],
       });
     } catch (err) {
       await client.query("ROLLBACK");

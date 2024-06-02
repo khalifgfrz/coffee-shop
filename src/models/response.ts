@@ -1,4 +1,5 @@
 import { IDataOrder } from "./order";
+import { IOrderDetailsData } from "./orderDetails";
 import { IDataProduct } from "./product";
 import { IDataPromo } from "./promo";
 import { IDataSizes } from "./sizes";
@@ -41,4 +42,8 @@ export interface ISizesResponse extends IBasicResponse {
 
 export interface IAuthResponse extends IBasicResponse {
   data?: { token: string }[];
+}
+
+export interface IOrderWithDetailsResponse extends IBasicResponse {
+  data?: [IDataOrder[], IOrderDetailsData[]];
 }

@@ -1,14 +1,15 @@
 import { Pool, PoolClient, QueryResult } from "pg";
 
 import db from "../configs/pg";
-import { IDataOrder, IOrderQuery } from "../models/order";
+import { IDataOrder, IOrderBody, IOrderQuery } from "../models/order";
 
 export const getAllOrder = ({ page }: IOrderQuery): Promise<QueryResult<IDataOrder>> => {
-  let query = `select ol.id, u.full_name, u.address, ol.subtotal, ol.tax, , u.phone, p.method as payment_method, d.method as shipping, p2.promo_name, ol.notes, ol.status, ol.grand_total from order_list ol
-  join "user" u on ol.user_id = u.id
-  join payments p on ol.payment_id = p.id
-  join deliveries d on ol.delivery_id = d.id
-  join promo p2 on ol.promo_id = p2.id`;
+  let query = `select ol.id, u.full_name, u.address, ol.subtotal, ol.tax, u.phone, p.method as payment_method, d.method as shipping,
+  d.minimum_distance as distance, d.added_cost as "added cost", p2.promo_name, ol.notes, ol.status, ol.grand_total from order_list ol
+    join "user" u on ol.user_id = u.id
+    join payments p on ol.payment_id = p.id
+    join deliveries d on ol.delivery_id = d.id
+    join promo p2 on ol.promo_id = p2.id`;
   const values = [];
   if (page) {
     const offset = (parseInt(page) - 1) * 4;
@@ -18,31 +19,30 @@ export const getAllOrder = ({ page }: IOrderQuery): Promise<QueryResult<IDataOrd
   return db.query(query, values);
 };
 
-export const getOneOrder = (no_order: string): Promise<QueryResult<IDataOrder>> => {
-  const query = `select ol.id, ol.no_order, ol."date", p.product_name, ol.status, p.price, p2.promo_name from order_list ol
-  join product p on ol.product_id = p.id
-  join promo p2 on ol.promo_id = p2.id
-  where ol."no_order" = $1`;
-  const values = [no_order];
+export const getOneOrder = (uuid: string): Promise<QueryResult<IDataOrder>> => {
+  const query = `select ol.id, u.full_name, u.address, ol.subtotal, ol.tax, u.phone, p.method as payment_method, d.method as shipping,
+  d.minimum_distance as distance, d.added_cost as "added cost", p2.promo_name, ol.notes, ol.status, ol.grand_total from order_list ol
+    join "user" u on ol.user_id = u.id
+    join payments p on ol.payment_id = p.id
+    join deliveries d on ol.delivery_id = d.id
+    join promo p2 on ol.promo_id = p2.id
+  where ol.uuid = $1`;
+  const values = [uuid];
   return db.query(query, values);
 };
 
-export const createOrder = (product_ids: number[], promo_id: number, user_id: number, pgConn: Pool | PoolClient): Promise<QueryResult<IDataOrder>> => {
-  let query = `insert into order_list (product_id, promo_id, user_id) values`;
-  const values = [];
-  for (const product_id of product_ids) {
-    if (values.length) query += ",";
-    query += `($${values.length + 1}, $${values.length + 2}, $${values.length + 3})`;
-    values.push(product_id, promo_id, user_id);
-  }
-  query += " returning product_id, promo_id, user_id";
+export const createOrder = (body: IOrderBody, pgConn: Pool | PoolClient): Promise<QueryResult<IDataOrder>> => {
+  let query = `insert into order_list (user_id, subtotal, tax, payment_id, delivery_id, promo_id, status, grand_total, notes) values ($1,$2,$3,$4,$5,$6,$7,$8,$9)
+  returning user_id, subtotal, tax, payment_id, delivery_id, promo_id, status, grand_total, notes`;
+  const { user_id, subtotal, tax, payment_id, delivery_id, promo_id, status, grand_total, notes } = body;
+  const values = [user_id, subtotal, tax, payment_id, delivery_id, promo_id, status, grand_total, notes];
   return pgConn.query(query, values);
 };
 
-export const deleteOrder = (no_order: string): Promise<QueryResult<IDataOrder>> => {
-  const query = `delete from order_list where no_order=$1
-  returning no_order, product_id, promo_id, user_id, status`;
-  const values = [no_order];
+export const deleteOrder = (uuid: string): Promise<QueryResult<IDataOrder>> => {
+  const query = `delete from order_list where uuid=$1
+  returning user_id, subtotal, tax, payment_id, delivery_id, promo_id, status, grand_total, notes`;
+  const values = [uuid];
   return db.query(query, values);
 };
 

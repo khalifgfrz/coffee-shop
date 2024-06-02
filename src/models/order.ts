@@ -1,3 +1,5 @@
+import { IOrderDetailsBody } from "./orderDetails";
+
 export interface IOrderParams {
   uuid: string;
 }
@@ -15,6 +17,7 @@ export interface IOrderBody {
   promo_id: number;
   status: string;
   grand_total: number;
+  notes: string;
 }
 
 export interface IDataOrder extends IOrderBody {
@@ -23,3 +26,5 @@ export interface IDataOrder extends IOrderBody {
   created_at: string;
   updated_at: string | null;
 }
+
+export interface IOrderWithDetailsBody extends IOrderDetailsBody, IOrderBody {}
