@@ -40,6 +40,14 @@ export interface ISizesResponse extends IBasicResponse {
   data?: IDataSizes[];
 }
 
+export interface ISizesResponse extends IBasicResponse {
+  data?: IDataSizes[];
+}
+
+export interface IOrderDetailsResponse extends IBasicResponse {
+  data?: IOrderDetailsData[];
+}
+
 export interface IAuthResponse extends IBasicResponse {
   data?: { token: string }[];
 }
