@@ -4,9 +4,9 @@ import morgan from "morgan";
 import cors, { CorsOptions } from "cors";
 // import path from "path";
 
-let path = "./.env.production";
+// let path = "./.env.production";
 // if (process.env.NODE_ENV == "production") path = "./.env.production";
-dotenv.config({ path });
+dotenv.config();
 
 import router from "./src/routes";
 
