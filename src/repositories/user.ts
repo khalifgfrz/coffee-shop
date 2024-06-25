@@ -29,7 +29,7 @@ export const createUser = (body: IUserBody): Promise<QueryResult<IDataUser>> => 
 };
 
 export const registerUser = (full_name: string, email: string, hashedPassword: string): Promise<QueryResult<IDataUser>> => {
-  const query = `insert into "user" (full_name, email, "role", pwd) values ($1,$2,'user',$3)
+  const query = `insert into "user" (full_name, email, pwd, "role") values ($1,$2,$3,'user')
   returning full_name, email, "role"`;
   const values = [full_name, email, hashedPassword];
   return db.query(query, values);
