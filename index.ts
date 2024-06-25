@@ -2,11 +2,13 @@ import express, { Request, Response } from "express";
 import * as dotenv from "dotenv";
 import morgan from "morgan";
 import cors, { CorsOptions } from "cors";
+// import path from "path";
 
-dotenv.config();
+let path = "./.env.production";
+// if (process.env.NODE_ENV == "production") path = "./.env.production";
+dotenv.config({ path });
 
 import router from "./src/routes";
-import { MulterError } from "multer";
 
 const app = express();
 

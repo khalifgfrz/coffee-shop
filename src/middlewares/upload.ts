@@ -1,4 +1,4 @@
-import multer, { Field, Options, diskStorage } from "multer";
+import multer, { Options, StorageEngine, diskStorage, memoryStorage } from "multer";
 import path from "path";
 import { NextFunction, Request, Response } from "express-serve-static-core";
 import { AppParams } from "../models/params";
@@ -15,8 +15,10 @@ const multerDisk = diskStorage({
   },
 });
 
-const multerOptions: Options = {
-  storage: multerDisk,
+const multerMemory = memoryStorage();
+
+const createMulterOptions = (storageEngine: StorageEngine): Options => ({
+  storage: storageEngine,
   limits: {
     fileSize: 1e6, // 1,000,000 bytes (1MB)
   },
@@ -28,12 +30,26 @@ const multerOptions: Options = {
     }
     cb(null, true);
   },
-};
+});
 
-const uploader = multer(multerOptions);
+const uploader = multer(createMulterOptions(multerDisk));
+const cloudUploader = multer(createMulterOptions(multerMemory));
 
 export const singleUploader = (fieldName: string) => (req: Request<AppParams>, res: Response<IAuthResponse>, next: NextFunction) => {
   const uploaders = uploader.single(fieldName);
+  uploaders(req, res, function (err) {
+    if (err instanceof Error) {
+      return res.status(400).json({
+        msg: "Bad Request",
+        err: err.message,
+      });
+    }
+    next();
+  });
+};
+
+export const singleCloudUploader = (fieldName: string) => (req: Request<AppParams>, res: Response<IAuthResponse>, next: NextFunction) => {
+  const uploaders = cloudUploader.single(fieldName);
   uploaders(req, res, function (err) {
     if (err instanceof Error) {
       return res.status(400).json({

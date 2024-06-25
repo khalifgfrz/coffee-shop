@@ -1,7 +1,7 @@
 import { Router } from "express";
-import { createNewUser, getDetailUser, getUser, deleteExtUser, updateDetailUser, registerNewUser, loginUser, setPwd, changePwd, deletedUser } from "../handlers/user";
+import { createNewUser, getDetailUser, getUser, deleteExtUser, updateDetailUser, registerNewUser, loginUser, setPwd, changePwd, deletedUser, setImageCloud } from "../handlers/user";
 import { authorization } from "../middlewares/authorization";
-import { singleUploader } from "../middlewares/upload";
+import { singleUploader, singleCloudUploader } from "../middlewares/upload";
 
 const userRouter = Router();
 
@@ -25,7 +25,10 @@ userRouter.delete("/delete", authorization(), deleteExtUser);
 userRouter.delete("/:uuid", authorization(["admin"]), deletedUser);
 
 // Mengupdate User
-userRouter.patch("/settings", authorization(), singleUploader("image"), updateDetailUser);
+userRouter.patch("/settings", authorization(), updateDetailUser);
+
+// Edit Image User via Cloudinary
+userRouter.patch("/settings/upload", authorization(), singleCloudUploader("image"), setImageCloud);
 
 // Edit Pwd
 userRouter.patch("/resetpassword", authorization(), changePwd);
