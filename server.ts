@@ -2,6 +2,7 @@ import express, { Request, Response } from "express";
 import * as dotenv from "dotenv";
 import morgan from "morgan";
 import cors, { CorsOptions } from "cors";
+import multer from "multer";
 // import path from "path";
 
 let path = "./.env.production";
@@ -11,9 +12,11 @@ dotenv.config({ path });
 import router from "./src/routes";
 
 const app = express();
+const upload = multer();
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
+app.use(upload.none());
 
 // logger
 const logger = morgan("dev");
