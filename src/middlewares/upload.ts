@@ -23,7 +23,7 @@ const createMulterOptions = (storageEngine: StorageEngine): Options => ({
     fileSize: 1e6, // 1,000,000 bytes (1MB)
   },
   fileFilter: (req, file, cb) => {
-    const allowedExtRe = /\.(jpg|png|jpeg)$/i;
+    const allowedExtRe = /\.(jpg|png|jpeg|webp)$/i;
     const extName = path.extname(file.originalname);
     if (!allowedExtRe.test(extName)) {
       return cb(new Error("Incorrect File"));
