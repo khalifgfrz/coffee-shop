@@ -12,11 +12,11 @@ dotenv.config({ path });
 import router from "./src/routes";
 
 const app = express();
-// const upload = multer();
+const upload = multer();
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-// app.use(upload.none());
+app.use(upload.none());
 
 // logger
 const logger = morgan("dev");
