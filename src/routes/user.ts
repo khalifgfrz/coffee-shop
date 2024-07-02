@@ -7,7 +7,7 @@ const userRouter = Router();
 
 // CRUD
 userRouter.get("/datauser", authorization(["admin"]), getUser);
-userRouter.get("/", getDetailUser);
+userRouter.get("/", authorization(), getDetailUser);
 
 // Menambah User Baru
 userRouter.post("/createuser", authorization(["admin"]), createNewUser);
