@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { createNewProduct, deleteExtProduct, getDetailProduct, getProduct, updateDetailProduct } from "../handlers/product";
+import { createNewProduct, deleteExtProduct, getDetailProduct, getProduct, setImageCloud, updateDetailProduct } from "../handlers/product";
 import { authorization } from "../middlewares/authorization";
 import { singleCloudUploader, singleUploader } from "../middlewares/upload";
 
@@ -16,6 +16,8 @@ productRouter.post("/", authorization(["admin"]), singleUploader("image"), creat
 // Menghapus Produk
 productRouter.delete("/:uuid", authorization(["admin"]), deleteExtProduct);
 // Mengupdate Produk
-productRouter.patch("/:uuid", authorization(["admin"]), singleCloudUploader("image"), updateDetailProduct);
+productRouter.patch("/:uuid", authorization(["admin"]), updateDetailProduct);
+// Edit Image Product via Cloudinary
+productRouter.patch("/:uuid/upload", authorization(), singleCloudUploader("image"), setImageCloud);
 
 export default productRouter;

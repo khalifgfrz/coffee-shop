@@ -90,8 +90,17 @@ export const updateOneUser = (body: IUserBody, emailparams: string, imgUrl?: str
     values.push(`${imgUrl}`);
     condition = true;
   }
-  query += `, updated_at = now() where email = $${values.length + 1} returning full_name, phone, address, email, image`;
+  query += `, updated_at = now() where email = $${values.length + 1} returning full_name, phone, address, email`;
   values.push(`${emailparams}`);
+  return db.query(query, values);
+};
+
+export const setImageUser = (email: string, imgUrl?: string): Promise<QueryResult<IDataUser>> => {
+  const query = `update "user" set image=$1 where email=$2 returning email, image`;
+  const values: (string | null)[] = [];
+  if (imgUrl) values.push(`${imgUrl}`);
+  if (!imgUrl) values.push(null);
+  values.push(email);
   return db.query(query, values);
 };
 

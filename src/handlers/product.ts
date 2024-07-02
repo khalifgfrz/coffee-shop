@@ -1,6 +1,6 @@
 import { Request, Response } from "express-serve-static-core";
 
-import { getAllProduct, getOneProduct, createProduct, deleteProduct, updateOneProduct, getTotalProduct } from "../repositories/product";
+import { getAllProduct, getOneProduct, createProduct, deleteProduct, updateOneProduct, getTotalProduct, setImageProduct } from "../repositories/product";
 import { IProductBody, IProductParams, IProductQuery } from "../models/product";
 import getProductLink from "../helpers/getProductLink";
 import { IProductResponse } from "../models/response";
@@ -124,12 +124,8 @@ export const deleteExtProduct = async (req: Request<IProductParams>, res: Respon
 export const updateDetailProduct = async (req: Request<{ uuid: string }, {}, IProductBody>, res: Response<IProductResponse>) => {
   const { uuid } = req.params;
   try {
-    const { result, error } = await cloudinaryUploader(req, "product", uuid);
-    if (error) throw error;
-    if (!result) throw new Error("Upload gagal");
-
-    const dbResult = await updateOneProduct(req.body, uuid, result.secure_url);
-    if (dbResult.rowCount === 0) {
+    const result = await updateOneProduct(req.body, uuid);
+    if (result.rowCount === 0) {
       return res.status(404).json({
         msg: "Produk tidak ditemukan",
         data: [],
@@ -137,11 +133,40 @@ export const updateDetailProduct = async (req: Request<{ uuid: string }, {}, IPr
     }
     return res.status(201).json({
       msg: "success",
-      data: dbResult.rows,
+      data: result.rows,
     });
   } catch (err) {
     if (err instanceof Error) {
       if (/(invalid(.)+uuid(.)+)/g.test(err.message)) {
+        return res.status(401).json({
+          msg: "Error",
+          err: "User tidak ditemukan",
+        });
+      }
+      console.log(err.message);
+    }
+    return res.status(500).json({
+      msg: "Error",
+      err: "Internal Server Error",
+    });
+  }
+};
+
+export const setImageCloud = async (req: Request<{ uuid: string }>, res: Response<IProductResponse>) => {
+  const { uuid } = req.params;
+  try {
+    const { result, error } = await cloudinaryUploader(req, "product", uuid);
+    if (error) throw error;
+    if (!result) throw new Error("Upload gagal");
+
+    const dbResult = await setImageProduct(uuid, result.secure_url);
+    return res.status(200).json({
+      msg: "Gambar berhasil ditambahkan",
+      data: dbResult.rows,
+    });
+  } catch (err) {
+    if (err instanceof Error) {
+      if (/(invalid(.)+email(.)+)/g.test(err.message)) {
         return res.status(401).json({
           msg: "Error",
           err: "User tidak ditemukan",

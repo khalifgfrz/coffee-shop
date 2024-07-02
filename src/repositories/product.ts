@@ -106,14 +106,17 @@ export const updateOneProduct = (body: IProductBody, uuid: string, imgUrl?: stri
     values.push(`${stock}`);
     condition = true;
   }
-  if (imgUrl) {
-    query += condition ? "," : "";
-    query += ` image = $${values.length + 1}`;
-    values.push(`${imgUrl}`);
-    condition = true;
-  }
   query += `, updated_at = now() where uuid = $${values.length + 1} returning product_name, price, category, description, stock, image`;
   values.push(`${uuid}`);
+  return db.query(query, values);
+};
+
+export const setImageProduct = (email: string, imgUrl?: string): Promise<QueryResult<IDataProduct>> => {
+  const query = `update product set image=$1 where uuid=$2 returning uuid, image`;
+  const values: (string | null)[] = [];
+  if (imgUrl) values.push(`${imgUrl}`);
+  if (!imgUrl) values.push(null);
+  values.push(email);
   return db.query(query, values);
 };
 
