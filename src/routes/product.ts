@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { createNewProduct, deleteExtProduct, getDetailProduct, getProduct, updateDetailProduct } from "../handlers/product";
 import { authorization } from "../middlewares/authorization";
-import { singleUploader } from "../middlewares/upload";
+import { singleCloudUploader, singleUploader } from "../middlewares/upload";
 
 const productRouter = Router();
 
@@ -16,6 +16,6 @@ productRouter.post("/", authorization(["admin"]), singleUploader("image"), creat
 // Menghapus Produk
 productRouter.delete("/:uuid", authorization(["admin"]), deleteExtProduct);
 // Mengupdate Produk
-productRouter.patch("/:uuid", authorization(["admin"]), singleUploader("image"), updateDetailProduct);
+productRouter.patch("/:uuid", authorization(["admin"]), singleCloudUploader("image"), updateDetailProduct);
 
 export default productRouter;

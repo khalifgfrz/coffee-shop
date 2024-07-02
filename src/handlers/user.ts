@@ -2,7 +2,7 @@ import { Request, Response } from "express-serve-static-core";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 
-import { getAllUser, getOneUser, createUser, deleteUser, updateOneUser, registerUser, getPwdUser, setPwdUser, getTotalUser, deleteUserFromAdmin, setImageUser } from "../repositories/user";
+import { getAllUser, getOneUser, createUser, deleteUser, updateOneUser, registerUser, getPwdUser, setPwdUser, getTotalUser, deleteUserFromAdmin } from "../repositories/user";
 
 import { IUserBody, IUserParams, IUserQuery, IUserRegisterBody, IUserLoginBody } from "../models/user";
 import { IAuthResponse, IUserResponse } from "../models/response";
@@ -183,8 +183,12 @@ export const loginUser = async (req: Request<{}, {}, IUserLoginBody>, res: Respo
 export const updateDetailUser = async (req: Request<{ email: string }, {}, IUserBody>, res: Response<IUserResponse>) => {
   const { email } = req.userPayload as IPayload;
   try {
-    const result = await updateOneUser(req.body, email as string);
-    if (result.rowCount === 0) {
+    const { result, error } = await cloudinaryUploader(req, "user", email as string);
+    if (error) throw error;
+    if (!result) throw new Error("Upload gagal");
+
+    const dbResult = await updateOneUser(req.body, email as string, result.secure_url);
+    if (dbResult.rowCount === 0) {
       return res.status(404).json({
         msg: "User tidak ditemukan",
         data: [],
@@ -192,7 +196,7 @@ export const updateDetailUser = async (req: Request<{ email: string }, {}, IUser
     }
     return res.status(201).json({
       msg: "success",
-      data: result.rows,
+      data: dbResult.rows,
     });
   } catch (err) {
     if (err instanceof Error) {
@@ -291,31 +295,31 @@ export const deletedUser = async (req: Request<IUserParams>, res: Response<IUser
   }
 };
 
-export const setImageCloud = async (req: Request<{ email: string }>, res: Response<IUserResponse>) => {
-  const { email } = req.userPayload as IPayload;
-  try {
-    const { result, error } = await cloudinaryUploader(req, "user", email as string);
-    if (error) throw error;
-    if (!result) throw new Error("Upload gagal");
+// export const setImageCloud = async (req: Request<{ email: string }>, res: Response<IUserResponse>) => {
+//   const { email } = req.userPayload as IPayload;
+//   try {
+//     const { result, error } = await cloudinaryUploader(req, "user", email as string);
+//     if (error) throw error;
+//     if (!result) throw new Error("Upload gagal");
 
-    const dbResult = await setImageUser(email as string, result.secure_url);
-    return res.status(200).json({
-      msg: "Gambar berhasil ditambahkan",
-      data: dbResult.rows,
-    });
-  } catch (err) {
-    if (err instanceof Error) {
-      if (/(invalid(.)+email(.)+)/g.test(err.message)) {
-        return res.status(401).json({
-          msg: "Error",
-          err: "User tidak ditemukan",
-        });
-      }
-      console.log(err.message);
-    }
-    return res.status(500).json({
-      msg: "Error",
-      err: "Internal Server Error",
-    });
-  }
-};
+//     const dbResult = await setImageUser(email as string, result.secure_url);
+//     return res.status(200).json({
+//       msg: "Gambar berhasil ditambahkan",
+//       data: dbResult.rows,
+//     });
+//   } catch (err) {
+//     if (err instanceof Error) {
+//       if (/(invalid(.)+email(.)+)/g.test(err.message)) {
+//         return res.status(401).json({
+//           msg: "Error",
+//           err: "User tidak ditemukan",
+//         });
+//       }
+//       console.log(err.message);
+//     }
+//     return res.status(500).json({
+//       msg: "Error",
+//       err: "Internal Server Error",
+//     });
+//   }
+// };

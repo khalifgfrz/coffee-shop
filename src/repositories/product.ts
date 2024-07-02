@@ -108,8 +108,8 @@ export const updateOneProduct = (body: IProductBody, uuid: string, imgUrl?: stri
   }
   if (imgUrl) {
     query += condition ? "," : "";
-    query += ` image=$${values.length + 1}`;
-    values.push(`/imgs/${imgUrl}`);
+    query += ` image = $${values.length + 1}`;
+    values.push(`${imgUrl}`);
     condition = true;
   }
   query += `, updated_at = now() where uuid = $${values.length + 1} returning product_name, price, category, description, stock, image`;

@@ -4,6 +4,7 @@ import { getAllProduct, getOneProduct, createProduct, deleteProduct, updateOnePr
 import { IProductBody, IProductParams, IProductQuery } from "../models/product";
 import getProductLink from "../helpers/getProductLink";
 import { IProductResponse } from "../models/response";
+import { cloudinaryUploader } from "../helpers/cloudinary";
 
 export const getProduct = async (req: Request<{}, {}, {}, IProductQuery>, res: Response<IProductResponse>) => {
   try {
@@ -121,13 +122,14 @@ export const deleteExtProduct = async (req: Request<IProductParams>, res: Respon
 };
 
 export const updateDetailProduct = async (req: Request<{ uuid: string }, {}, IProductBody>, res: Response<IProductResponse>) => {
-  const {
-    file,
-    params: { uuid },
-  } = req;
+  const { uuid } = req.params;
   try {
-    const result = await updateOneProduct(req.body, uuid, file?.filename);
-    if (result.rowCount === 0) {
+    const { result, error } = await cloudinaryUploader(req, "product", uuid);
+    if (error) throw error;
+    if (!result) throw new Error("Upload gagal");
+
+    const dbResult = await updateOneProduct(req.body, uuid, result.secure_url);
+    if (dbResult.rowCount === 0) {
       return res.status(404).json({
         msg: "Produk tidak ditemukan",
         data: [],
@@ -135,7 +137,7 @@ export const updateDetailProduct = async (req: Request<{ uuid: string }, {}, IPr
     }
     return res.status(201).json({
       msg: "success",
-      data: result.rows,
+      data: dbResult.rows,
     });
   } catch (err) {
     if (err instanceof Error) {

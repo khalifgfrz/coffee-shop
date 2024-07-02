@@ -55,7 +55,7 @@ export const deleteUserFromAdmin = (uuid: string): Promise<QueryResult<IDataUser
   return db.query(query, values);
 };
 
-export const updateOneUser = (body: IUserBody, emailparams: string): Promise<QueryResult<IDataUser>> => {
+export const updateOneUser = (body: IUserBody, emailparams: string, imgUrl?: string): Promise<QueryResult<IDataUser>> => {
   let query = `update "user" set`;
   const { full_name, phone, address, email } = body;
   const values = [];
@@ -84,17 +84,14 @@ export const updateOneUser = (body: IUserBody, emailparams: string): Promise<Que
     values.push(`${email}`);
     condition = true;
   }
-  query += `, updated_at = now() where email = $${values.length + 1} returning full_name, phone, address, email`;
+  if (imgUrl) {
+    query += condition ? "," : "";
+    query += ` image = $${values.length + 1}`;
+    values.push(`${imgUrl}`);
+    condition = true;
+  }
+  query += `, updated_at = now() where email = $${values.length + 1} returning full_name, phone, address, email, image`;
   values.push(`${emailparams}`);
-  return db.query(query, values);
-};
-
-export const setImageUser = (email: string, imgUrl?: string): Promise<QueryResult<IDataUser>> => {
-  const query = `update "user" set image=$1 where email=$2 returning email, image`;
-  const values: (string | null)[] = [];
-  if (imgUrl) values.push(`${imgUrl}`);
-  if (!imgUrl) values.push(null);
-  values.push(email);
   return db.query(query, values);
 };
 
