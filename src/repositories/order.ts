@@ -4,7 +4,7 @@ import db from "../configs/pg";
 import { IDataOrder, IOrderBody, IOrderQuery } from "../models/order";
 
 export const getAllOrder = ({ page }: IOrderQuery): Promise<QueryResult<IDataOrder>> => {
-  let query = `select ol.id, u.full_name, u.address, ol.subtotal, ol.tax, u.phone, p.method as payment_method, d.method as shipping,
+  let query = `select ol.id, u.full_name, u.address, ol.subtotal, ol.tax, u.phone, p.payment_method, d.delivery_method,
   d.minimum_distance as distance, d.added_cost as "added cost", p2.promo_name, ol.notes, ol.status, ol.grand_total from order_list ol
     join "user" u on ol.user_id = u.id
     join payments p on ol.payment_id = p.id
@@ -20,7 +20,7 @@ export const getAllOrder = ({ page }: IOrderQuery): Promise<QueryResult<IDataOrd
 };
 
 export const getOneOrder = (uuid: string): Promise<QueryResult<IDataOrder>> => {
-  const query = `select ol.id, u.full_name, u.address, ol.subtotal, ol.tax, u.phone, p.method as payment_method, d.method as shipping,
+  const query = `select ol.id, u.full_name, u.address, ol.subtotal, ol.tax, u.phone, p.payment_method, d.delivery_method,
   d.minimum_distance as distance, d.added_cost as "added cost", p2.promo_name, ol.notes, ol.status, ol.grand_total from order_list ol
     join "user" u on ol.user_id = u.id
     join payments p on ol.payment_id = p.id
