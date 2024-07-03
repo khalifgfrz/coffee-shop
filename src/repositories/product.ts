@@ -23,7 +23,7 @@ export const getAllProduct = (que: IProductQuery): Promise<QueryResult<IDataProd
   if (max_price) {
     query += condition ? " and " : " where ";
     query += ` price < $${values.length + 1}`;
-    values.push(`${min_price}`);
+    values.push(`${max_price}`);
     condition = true;
   }
   if (category) {
