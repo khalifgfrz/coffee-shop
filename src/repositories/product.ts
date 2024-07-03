@@ -5,7 +5,7 @@ import { IDataProduct, IProductBody, IProductQuery } from "../models/product";
 
 export const getAllProduct = (que: IProductQuery): Promise<QueryResult<IDataProduct>> => {
   let query = `select * from product`;
-  const { product_name, price, category, sortBy, page } = que;
+  const { product_name, min_price, max_price, category, sortBy, page } = que;
   const values = [];
   let condition = false;
 
@@ -14,10 +14,16 @@ export const getAllProduct = (que: IProductQuery): Promise<QueryResult<IDataProd
     values.push(`%${product_name}%`);
     condition = true;
   }
-  if (price) {
+  if (min_price) {
     query += condition ? " and " : " where ";
     query += ` price > $${values.length + 1}`;
-    values.push(`${price}`);
+    values.push(`${min_price}`);
+    condition = true;
+  }
+  if (max_price) {
+    query += condition ? " and " : " where ";
+    query += ` price < $${values.length + 1}`;
+    values.push(`${min_price}`);
     condition = true;
   }
   if (category) {

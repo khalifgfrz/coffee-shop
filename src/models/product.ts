@@ -4,7 +4,8 @@ export interface IProductParams {
 
 export interface IProductQuery {
   product_name?: string;
-  price?: number;
+  min_price?: number;
+  max_price?: number;
   category?: string;
   sortBy?: "product_name" | "price" | "latest" | "oldest";
   page?: string;
