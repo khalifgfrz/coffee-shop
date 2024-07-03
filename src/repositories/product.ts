@@ -34,7 +34,7 @@ export const getAllProduct = (que: IProductQuery): Promise<QueryResult<IDataProd
   }
 
   switch (sortBy) {
-    case "product_name":
+    case "alphabet":
       query += " order by product_name asc";
       break;
     case "price":
