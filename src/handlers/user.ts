@@ -183,7 +183,8 @@ export const loginUser = async (req: Request<{}, {}, IUserLoginBody>, res: Respo
 export const updateDetailUser = async (req: Request<{ email: string }, {}, IUserBody>, res: Response<IUserResponse>) => {
   const { email } = req.userPayload as IPayload;
   try {
-    const { result } = await cloudinaryUploader(req, "user", email as string);
+    const { result, error } = await cloudinaryUploader(req, "user", email as string);
+    if (error) throw error;
     const dbResult = await updateOneUser(req.body, email as string, result?.secure_url);
     if (dbResult.rowCount === 0) {
       return res.status(404).json({
