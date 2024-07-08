@@ -25,7 +25,7 @@ userRouter.delete("/delete", authorization(), deleteExtUser);
 userRouter.delete("/:uuid", authorization(["admin"]), deletedUser);
 
 // Mengupdate User
-userRouter.patch("/settings", authorization(), updateDetailUser);
+userRouter.patch("/settings", authorization(), singleCloudUploader("image"), updateDetailUser);
 
 // Edit Image User via Cloudinary
 userRouter.patch("/settings/upload", authorization(), singleCloudUploader("image"), setImageCloud);
