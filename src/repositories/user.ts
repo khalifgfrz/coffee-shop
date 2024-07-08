@@ -55,7 +55,7 @@ export const deleteUserFromAdmin = (uuid: string): Promise<QueryResult<IDataUser
   return db.query(query, values);
 };
 
-export const updateOneUser = (body: IUserBody, emailparams: string, imgUrl?: string): Promise<QueryResult<IDataUser>> => {
+export const updateOneUser = (body: IUserBody, emailparams: string): Promise<QueryResult<IDataUser>> => {
   let query = `update "user" set`;
   const { full_name, phone, address, email } = body;
   const values = [];
@@ -84,12 +84,12 @@ export const updateOneUser = (body: IUserBody, emailparams: string, imgUrl?: str
     values.push(`${email}`);
     condition = true;
   }
-  if (imgUrl) {
-    query += condition ? "," : "";
-    query += ` image = $${values.length + 1}`;
-    values.push(`${imgUrl}`);
-    condition = true;
-  }
+  // if (imgUrl) {
+  //   query += condition ? "," : "";
+  //   query += ` image = $${values.length + 1}`;
+  //   values.push(`${imgUrl}`);
+  //   condition = true;
+  // }
   query += `, updated_at = now() where email = $${values.length + 1} returning full_name, phone, address, email`;
   values.push(`${emailparams}`);
   return db.query(query, values);
