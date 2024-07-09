@@ -52,6 +52,7 @@ export const singleCloudUploader = (fieldName: string) => (req: Request<AppParam
   const uploaders = cloudUploader.single(fieldName);
   uploaders(req, res, function (err) {
     if (err instanceof Error) {
+      console.log(err);
       return res.status(400).json({
         msg: "Bad Request",
         err: err.message,

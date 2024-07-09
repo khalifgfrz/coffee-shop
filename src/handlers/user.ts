@@ -10,6 +10,7 @@ import { IPayload } from "../models/payload";
 import { jwtOptions } from "../middlewares/authorization";
 import getUserLink from "../helpers/getUserLink";
 import { cloudinaryUploader } from "../helpers/cloudinary";
+import { UploadApiResponse } from "cloudinary";
 
 export const getUser = async (req: Request<{}, {}, {}, IUserQuery>, res: Response<IUserResponse>) => {
   try {
@@ -182,10 +183,15 @@ export const loginUser = async (req: Request<{}, {}, IUserLoginBody>, res: Respo
 
 export const updateDetailUser = async (req: Request<{ email: string }, {}, IUserBody>, res: Response<IUserResponse>) => {
   const { email } = req.userPayload as IPayload;
+  const { file } = req;
   try {
-    const { result, error } = await cloudinaryUploader(req, "user", email as string);
-    if (error) throw error;
-    const dbResult = await updateOneUser(req.body, email as string, result?.secure_url);
+    let uploadResult: UploadApiResponse | undefined;
+    if (file) {
+      const { result, error } = await cloudinaryUploader(req, "user", email as string);
+      uploadResult = result;
+      if (error) throw error;
+    }
+    const dbResult = await updateOneUser(req.body, email as string, uploadResult?.secure_url);
     if (dbResult.rowCount === 0) {
       return res.status(404).json({
         msg: "User tidak ditemukan",
