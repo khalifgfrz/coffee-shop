@@ -5,7 +5,7 @@ import { IDataOrder, IOrderBody, IOrderQuery } from "../models/order";
 
 export const getAllOrder = ({ page }: IOrderQuery): Promise<QueryResult<IDataOrder>> => {
   let query = `select ol.id, u.full_name, u.address, ol.subtotal, ol.tax, u.phone, p.payment_method, d.delivery_method,
-  d.minimum_distance as distance, d.added_cost as "added cost", p2.promo_name, ol.notes, ol.status, ol.grand_total from order_list ol
+  d.minimum_distance as distance, d.added_cost as "added cost", p2.promo_name, ol.status, ol.grand_total from order_list ol
     join "user" u on ol.user_id = u.id
     join payments p on ol.payment_id = p.id
     join deliveries d on ol.delivery_id = d.id
@@ -21,27 +21,26 @@ export const getAllOrder = ({ page }: IOrderQuery): Promise<QueryResult<IDataOrd
 
 export const getOneOrder = (uuid: string): Promise<QueryResult<IDataOrder>> => {
   const query = `select ol.id, u.full_name, u.address, ol.subtotal, ol.tax, u.phone, p.payment_method, d.delivery_method,
-  d.minimum_distance as distance, d.added_cost as "added cost", p2.promo_name, ol.notes, ol.status, ol.grand_total from order_list ol
+  d.minimum_distance as distance, d.added_cost as "added cost", ol.status, ol.grand_total from order_list ol
     join "user" u on ol.user_id = u.id
     join payments p on ol.payment_id = p.id
     join deliveries d on ol.delivery_id = d.id
-    join promo p2 on ol.promo_id = p2.id
   where ol.uuid = $1`;
   const values = [uuid];
   return db.query(query, values);
 };
 
 export const createOrder = (body: IOrderBody, pgConn: Pool | PoolClient): Promise<QueryResult<IDataOrder>> => {
-  let query = `insert into order_list (user_id, subtotal, tax, payment_id, delivery_id, promo_id, status, grand_total, notes) values ($1,$2,$3,$4,$5,$6,$7,$8,$9)
-  returning id, user_id, subtotal, tax, payment_id, delivery_id, promo_id, status, grand_total, notes`;
-  const { user_id, subtotal, tax, payment_id, delivery_id, promo_id, status, grand_total, notes } = body;
-  const values = [user_id, subtotal, tax, payment_id, delivery_id, promo_id, status, grand_total, notes];
+  let query = `insert into order_list (user_id, subtotal, tax, payment_id, delivery_id, promo_id, status, grand_total) values ($1,$2,$3,$4,$5,$6,$7,$8)
+  returning id, uuid, user_id, subtotal, tax, payment_id, delivery_id, promo_id, status, grand_total`;
+  const { user_id, subtotal, tax, payment_id, delivery_id, promo_id, status, grand_total } = body;
+  const values = [user_id, subtotal, tax, payment_id, delivery_id, promo_id, status, grand_total];
   return pgConn.query(query, values);
 };
 
 export const deleteOrder = (uuid: string): Promise<QueryResult<IDataOrder>> => {
   const query = `delete from order_list where uuid=$1
-  returning user_id, subtotal, tax, payment_id, delivery_id, promo_id, status, grand_total, notes`;
+  returning user_id, subtotal, tax, payment_id, delivery_id, promo_id, status, grand_total`;
   const values = [uuid];
   return db.query(query, values);
 };

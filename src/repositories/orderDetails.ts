@@ -31,5 +31,6 @@ export const createDetail = (order_id: number, size_id: number, product_ids: num
   }
 
   query += " returning id, order_id, size_id, product_id, qty";
+
   return pgConn.query(query, values);
 };
