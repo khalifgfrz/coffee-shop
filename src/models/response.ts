@@ -53,5 +53,5 @@ export interface IAuthResponse extends IBasicResponse {
 }
 
 export interface IOrderWithDetailsResponse extends IBasicResponse {
-  data?: [IDataOrder[], IOrderDetailsData[]];
+  data?: IDataOrder[];
 }

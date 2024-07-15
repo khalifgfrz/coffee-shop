@@ -3,14 +3,14 @@ export interface IOrderDetailsParams {
 }
 
 export interface IOrderDetailsBody {
-  size_id: number;
-  product_ids: number[];
-  qty: number;
-  subtotal: number;
+  products: {
+    product_id: number;
+    size_id: number;
+    qty: number;
+  }[];
 }
 
 export interface IOrderDetailsData extends IOrderDetailsBody {
   id: number;
   order_id: number;
-  product_id: number;
 }

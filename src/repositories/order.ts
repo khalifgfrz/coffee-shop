@@ -19,7 +19,7 @@ export const getAllOrder = ({ page }: IOrderQuery): Promise<QueryResult<IDataOrd
   return db.query(query, values);
 };
 
-export const getOneOrder = (uuid: string): Promise<QueryResult<IDataOrder>> => {
+export const getOneOrder = (uuid: string, pgConn: Pool | PoolClient): Promise<QueryResult<IDataOrder>> => {
   const query = `select ol.id, u.full_name, u.address, ol.subtotal, ol.tax, u.phone, p.payment_method, d.delivery_method,
   d.minimum_distance as distance, d.added_cost as "added cost", ol.status, ol.grand_total from order_list ol
     join "user" u on ol.user_id = u.id
@@ -27,7 +27,7 @@ export const getOneOrder = (uuid: string): Promise<QueryResult<IDataOrder>> => {
     join deliveries d on ol.delivery_id = d.id
   where ol.uuid = $1`;
   const values = [uuid];
-  return db.query(query, values);
+  return pgConn.query(query, values);
 };
 
 export const createOrder = (body: IOrderBody, pgConn: Pool | PoolClient): Promise<QueryResult<IDataOrder>> => {

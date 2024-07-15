@@ -1,11 +1,11 @@
 import { Request, Response } from "express-serve-static-core";
 
 import { createOrder, deleteOrder, getAllOrder, getOneOrder, getTotalOrder, updateOrder } from "../repositories/order";
-import { IOrderParams, IOrderBody, IOrderQuery, IOrderWithDetailsBody } from "../models/order";
+import { IOrderParams, IOrderBody, IOrderQuery, IOrderWithDetailsBody, IDataOrder } from "../models/order";
 import getOrderLink from "../helpers/getOrderLink";
 import { IOrderResponse, IOrderWithDetailsResponse } from "../models/response";
 import db from "../configs/pg";
-import { createDetail } from "../repositories/orderDetails";
+import { createDetail, getOneOrderDetails } from "../repositories/orderDetails";
 
 export const getOrder = async (req: Request<{}, {}, {}, IOrderQuery>, res: Response<IOrderResponse>) => {
   try {
@@ -45,17 +45,29 @@ export const getOrder = async (req: Request<{}, {}, {}, IOrderQuery>, res: Respo
 export const getDetailOrder = async (req: Request<IOrderParams>, res: Response<IOrderResponse>) => {
   const { uuid } = req.params;
   try {
-    const result = await getOneOrder(uuid);
-    if (result.rowCount === 0) {
-      return res.status(404).json({
-        msg: "Pesanan tidak ditemukan",
-        data: [],
+    const client = await db.connect();
+    try {
+      await client.query("BEGIN");
+
+      const getOrderResult = await getOneOrder(uuid, client);
+      const order_id = getOrderResult.rows[0].id;
+
+      const getDetailResult = await getOneOrderDetails(order_id, client);
+
+      const getOrdersWithDetails = getOrderResult.rows.map((order) => ({
+        ...order,
+        products: getDetailResult.rows,
+      }));
+      return res.status(201).json({
+        msg: "Success",
+        data: getOrdersWithDetails,
       });
+    } catch (err) {
+      await client.query("ROLLBACK");
+      throw err;
+    } finally {
+      client.release();
     }
-    return res.status(200).json({
-      msg: "Success",
-      data: result.rows,
-    });
   } catch (err) {
     if (err instanceof Error) {
       console.log(err.message);
@@ -68,7 +80,7 @@ export const getDetailOrder = async (req: Request<IOrderParams>, res: Response<I
 };
 
 export const createNewOrder = async (req: Request<{}, {}, IOrderWithDetailsBody>, res: Response<IOrderWithDetailsResponse>) => {
-  const { size_id, product_ids, qty } = req.body;
+  const { products } = req.body;
   try {
     const client = await db.connect();
     try {
@@ -77,13 +89,17 @@ export const createNewOrder = async (req: Request<{}, {}, IOrderWithDetailsBody>
       const orderResult = await createOrder(req.body, client);
       const order_id = orderResult.rows[0].id;
 
-      const detailResult = await createDetail(order_id, size_id, product_ids, qty, client);
+      const detailResult = await createDetail(order_id, products, client);
 
       await client.query("COMMIT");
 
+      const ordersWithDetails = orderResult.rows.map((order) => ({
+        ...order,
+        products: detailResult.rows,
+      }));
       return res.status(201).json({
         msg: "Success",
-        data: [orderResult.rows, detailResult.rows],
+        data: ordersWithDetails,
       });
     } catch (err) {
       await client.query("ROLLBACK");

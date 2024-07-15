@@ -17,7 +17,6 @@ export interface IOrderBody {
   promo_id: number;
   status: string;
   grand_total: number;
-  notes: string;
 }
 
 export interface IDataOrder extends IOrderBody {

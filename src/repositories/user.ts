@@ -92,6 +92,7 @@ export const updateOneUser = (body: IUserBody, emailparams: string, imgUrl?: str
   }
   query += `, updated_at = now() where email = $${values.length + 1} returning full_name, phone, address, email, image`;
   values.push(`${emailparams}`);
+  console.log(query, values);
   return db.query(query, values);
 };
 
