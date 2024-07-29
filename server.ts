@@ -24,7 +24,7 @@ app.use(logger);
 
 // cors
 const configs: CorsOptions = {
-  origin: ["http://localhost:8080", "http://127.0.0.1:5500", "http://localhost:5173", "https://coffee-shop-fe-react.vercel.app"],
+  origin: ["http://localhost:8080", "http://127.0.0.1:5500", "http://localhost:5174", "https://coffee-shop-fe-react.vercel.app"],
   methods: ["POST", "PATCH"],
   allowedHeaders: ["Authorization", "x-headers", "content-type"],
 };

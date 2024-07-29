@@ -140,13 +140,13 @@ export const registerNewUser = async (req: Request<{}, {}, IUserRegisterBody>, r
 
 // Authenticaton
 export const loginUser = async (req: Request<{}, {}, IUserLoginBody>, res: Response<IAuthResponse>) => {
-  const { email, role, pwd } = req.body;
+  const { email, full_name, pwd } = req.body;
   try {
     // user login menggunakan email
     const result = await getPwdUser(email);
     // handling jika password tidak ditemukan
     if (!result.rows.length) throw new Error("User tidak ditemukan");
-    const { pwd: hash, full_name } = result.rows[0];
+    const { pwd: hash, role } = result.rows[0];
     // mengecek apakah password sama
     const isPwdValid = await bcrypt.compare(pwd, hash);
     // handling jika password salah
@@ -184,12 +184,16 @@ export const loginUser = async (req: Request<{}, {}, IUserLoginBody>, res: Respo
 export const updateDetailUser = async (req: Request<{ email: string }, {}, IUserBody>, res: Response<IUserResponse>) => {
   const { email } = req.userPayload as IPayload;
   const { file } = req;
+
+  console.log("Received ID:", email);
+  console.log("Received File:", file);
   try {
     let uploadResult: UploadApiResponse | undefined;
     if (file) {
       const { result, error } = await cloudinaryUploader(req, "user", email as string);
       uploadResult = result;
       if (error) throw error;
+      console.log("Upload Result:", uploadResult);
     }
     const dbResult = await updateOneUser(req.body, email as string, uploadResult?.secure_url);
     if (dbResult.rowCount === 0) {
