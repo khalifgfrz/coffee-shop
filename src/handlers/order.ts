@@ -1,11 +1,12 @@
 import { Request, Response } from "express-serve-static-core";
 
-import { createOrder, deleteOrder, getAllOrder, getOneOrder, getTotalOrder, updateOrder } from "../repositories/order";
+import { createOrder, deleteOrder, getAllOrder, getOneOrder, getTotalOrder, historyOrder, updateOrder } from "../repositories/order";
 import { IOrderParams, IOrderBody, IOrderQuery, IOrderWithDetailsBody, IDataOrder } from "../models/order";
 import getOrderLink from "../helpers/getOrderLink";
 import { IOrderResponse, IOrderWithDetailsResponse } from "../models/response";
 import db from "../configs/pg";
 import { createDetail, getOneOrderDetails } from "../repositories/orderDetails";
+import { IPayload } from "../models/payload";
 
 export const getOrder = async (req: Request<{}, {}, {}, IOrderQuery>, res: Response<IOrderResponse>) => {
   try {
@@ -50,6 +51,43 @@ export const getDetailOrder = async (req: Request<IOrderParams>, res: Response<I
       await client.query("BEGIN");
 
       const getOrderResult = await getOneOrder(uuid, client);
+      const order_id = getOrderResult.rows[0].id;
+
+      const getDetailResult = await getOneOrderDetails(order_id, client);
+
+      const getOrdersWithDetails = getOrderResult.rows.map((order) => ({
+        ...order,
+        products: getDetailResult.rows,
+      }));
+      return res.status(201).json({
+        msg: "Success",
+        data: getOrdersWithDetails,
+      });
+    } catch (err) {
+      await client.query("ROLLBACK");
+      throw err;
+    } finally {
+      client.release();
+    }
+  } catch (err) {
+    if (err instanceof Error) {
+      console.log(err.message);
+    }
+    return res.status(500).json({
+      msg: "Error",
+      err: "Internal Server Error",
+    });
+  }
+};
+
+export const orderHistory = async (req: Request, res: Response<IOrderResponse>) => {
+  const { email } = req.userPayload as IPayload;
+  try {
+    const client = await db.connect();
+    try {
+      await client.query("BEGIN");
+
+      const getOrderResult = await historyOrder(email as string, client);
       const order_id = getOrderResult.rows[0].id;
 
       const getDetailResult = await getOneOrderDetails(order_id, client);

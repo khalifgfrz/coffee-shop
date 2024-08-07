@@ -30,6 +30,14 @@ export const getOneOrder = (uuid: string, pgConn: Pool | PoolClient): Promise<Qu
   return pgConn.query(query, values);
 };
 
+export const historyOrder = (email: string, pgConn: Pool | PoolClient): Promise<QueryResult<IDataOrder>> => {
+  const query = `select ol.id, ol.created_at, ol.grand_total, ol.status from order_list ol
+    join "user" u on ol.user_id = u.id
+  where u.email = $1`;
+  const values = [email];
+  return pgConn.query(query, values);
+};
+
 export const createOrder = (body: IOrderBody, pgConn: Pool | PoolClient): Promise<QueryResult<IDataOrder>> => {
   let query = `insert into order_list (user_id, subtotal, tax, payment_id, delivery_id, promo_id, status, grand_total) values ($1,$2,$3,$4,$5,$6,$7,$8)
   returning id, uuid, user_id, subtotal, tax, payment_id, delivery_id, promo_id, status, grand_total`;
