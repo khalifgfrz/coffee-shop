@@ -35,7 +35,7 @@ export const registerUser = (full_name: string, email: string, hashedPassword: s
   return db.query(query, values);
 };
 
-export const getPwdUser = (email: string): Promise<QueryResult<{ role: string; pwd: string }>> => {
+export const getPwdUser = (email: string): Promise<QueryResult<{ full_name: string; role: string; pwd: string }>> => {
   const query = `select full_name, "role", pwd from "user" where email = $1`;
   const values = [email];
   return db.query(query, values);

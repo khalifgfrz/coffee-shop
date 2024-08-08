@@ -140,13 +140,13 @@ export const registerNewUser = async (req: Request<{}, {}, IUserRegisterBody>, r
 
 // Authenticaton
 export const loginUser = async (req: Request<{}, {}, IUserLoginBody>, res: Response<IAuthResponse>) => {
-  const { email, full_name, pwd } = req.body;
+  const { email, pwd } = req.body;
   try {
     // user login menggunakan email
     const result = await getPwdUser(email);
     // handling jika password tidak ditemukan
     if (!result.rows.length) throw new Error("User tidak ditemukan");
-    const { pwd: hash, role } = result.rows[0];
+    const { pwd: hash, full_name, role } = result.rows[0];
     // mengecek apakah password sama
     const isPwdValid = await bcrypt.compare(pwd, hash);
     // handling jika password salah
