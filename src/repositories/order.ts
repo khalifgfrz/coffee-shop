@@ -5,11 +5,10 @@ import { IDataOrder, IOrderBody, IOrderQuery } from "../models/order";
 
 export const getAllOrder = ({ page }: IOrderQuery): Promise<QueryResult<IDataOrder>> => {
   let query = `select ol.id, u.full_name, u.address, ol.subtotal, ol.tax, u.phone, p.payment_method, d.delivery_method,
-  d.minimum_distance as distance, d.added_cost as "added cost", p2.promo_name, ol.status, ol.grand_total from order_list ol
+  d.minimum_distance as distance, d.added_cost as "added cost", ol.status, ol.grand_total from order_list ol
     join "user" u on ol.user_id = u.id
     join payments p on ol.payment_id = p.id
-    join deliveries d on ol.delivery_id = d.id
-    join promo p2 on ol.promo_id = p2.id`;
+    join deliveries d on ol.delivery_id = d.id`;
   const values = [];
   if (page) {
     const offset = (parseInt(page) - 1) * 4;
@@ -54,7 +53,7 @@ export const deleteOrder = (uuid: string): Promise<QueryResult<IDataOrder>> => {
 };
 
 export const updateOrder = (status: string, no_order: string): Promise<QueryResult<IDataOrder>> => {
-  const query = `update order_list set status = $1, updated_at = now() where no_order = $2
+  const query = `update order_list set status = $1, updated_at = now() where uuid = $2
   returning no_order, product_id, promo_id, user_id, status`;
   const values = [status, no_order];
   return db.query(query, values);

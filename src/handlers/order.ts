@@ -118,7 +118,25 @@ export const orderHistory = async (req: Request, res: Response<IOrderResponse>) 
 };
 
 export const createNewOrder = async (req: Request<{}, {}, IOrderWithDetailsBody>, res: Response<IOrderWithDetailsResponse>) => {
-  const { products } = req.body;
+  const { products, delivery_id, payment_id } = req.body;
+  if (!products || products.length === 0) {
+    return res.status(400).json({
+      msg: "Error",
+      err: "Please choose at least one product.",
+    });
+  }
+  if (!delivery_id) {
+    return res.status(400).json({
+      msg: "Error",
+      err: "Delivery ID are required.",
+    });
+  }
+  if (!payment_id) {
+    return res.status(400).json({
+      msg: "Error",
+      err: "Payment ID are required.",
+    });
+  }
   try {
     const client = await db.connect();
     try {

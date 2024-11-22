@@ -17,7 +17,7 @@ export const getUser = async (req: Request<{}, {}, {}, IUserQuery>, res: Respons
     const result = await getAllUser(req.query);
     if (result.rowCount === 0) {
       return res.status(404).json({
-        msg: "User tidak ditemukan",
+        msg: "User did not found",
         data: [],
       });
     }
@@ -53,7 +53,7 @@ export const getDetailUser = async (req: Request, res: Response<IUserResponse>) 
     const result = await getOneUser(email as string);
     if (result.rowCount === 0) {
       return res.status(404).json({
-        msg: "User tidak ditemukan",
+        msg: "User did not found",
         data: [],
       });
     }
@@ -96,7 +96,7 @@ export const deleteExtUser = async (req: Request<IUserParams>, res: Response<IUs
     const result = await deleteUser(email as string);
     if (result.rowCount === 0) {
       return res.status(404).json({
-        msg: "User tidak ditemukan",
+        msg: "User did not found",
         data: [],
       });
     }
@@ -117,19 +117,26 @@ export const deleteExtUser = async (req: Request<IUserParams>, res: Response<IUs
 
 export const registerNewUser = async (req: Request<{}, {}, IUserRegisterBody>, res: Response<IUserResponse>) => {
   const { full_name, email, pwd } = req.body;
+  if (!full_name || !email || !pwd) {
+    return res.status(400).json({
+      msg: "Error",
+      err: "All fields are required!",
+    });
+  }
   try {
-    // membuat hashed password
     const salt = await bcrypt.genSalt();
     const hashed = await bcrypt.hash(pwd, salt);
-    // menyimpan kedalam db
     const result = await registerUser(full_name, email, hashed);
     return res.status(201).json({
       msg: "Success",
       data: result.rows,
     });
-  } catch (err) {
-    if (err instanceof Error) {
-      console.log(err.message);
+  } catch (err: any) {
+    if (err.code === "23505") {
+      return res.status(400).json({
+        msg: "Error",
+        err: "Email is already registered!",
+      });
     }
     return res.status(500).json({
       msg: "Error",
@@ -138,23 +145,23 @@ export const registerNewUser = async (req: Request<{}, {}, IUserRegisterBody>, r
   }
 };
 
-// Authenticaton
 export const loginUser = async (req: Request<{}, {}, IUserLoginBody>, res: Response<IAuthResponse>) => {
   const { email, pwd } = req.body;
+  if (!email || !pwd) {
+    return res.status(400).json({
+      msg: "Error",
+      err: "All fields are required!",
+    });
+  }
   try {
-    // user login menggunakan email
     const result = await getPwdUser(email);
-    // handling jika password tidak ditemukan
-    if (!result.rows.length) throw new Error("User tidak ditemukan");
+    if (!result.rows.length) throw new Error("User did not found");
     const { pwd: hash, full_name, role } = result.rows[0];
-    // mengecek apakah password sama
     const isPwdValid = await bcrypt.compare(pwd, hash);
-    // handling jika password salah
-    if (!isPwdValid) throw new Error("Login Gagal");
-    // jika pwd benar, buatkan token
+    if (!isPwdValid) throw new Error("Wrong Password");
     const payload: IPayload = {
-      email, //uemail: email
-      role, //role: roles
+      email,
+      role,
     };
     const token = jwt.sign(payload, <string>process.env.JWT_SECRET, jwtOptions);
     return res.status(200).json({
@@ -166,7 +173,7 @@ export const loginUser = async (req: Request<{}, {}, IUserLoginBody>, res: Respo
       if (/(invalid(.)+email(.)+)/g.test(err.message)) {
         return res.status(401).json({
           msg: "Error",
-          err: "User tidak ditemukan",
+          err: "User did not found",
         });
       }
       return res.status(401).json({
@@ -198,7 +205,7 @@ export const updateDetailUser = async (req: Request<{ email: string }, {}, IUser
     const dbResult = await updateOneUser(req.body, email as string, uploadResult?.secure_url);
     if (dbResult.rowCount === 0) {
       return res.status(404).json({
-        msg: "User tidak ditemukan",
+        msg: "User did not found",
         data: [],
       });
     }
@@ -211,7 +218,7 @@ export const updateDetailUser = async (req: Request<{ email: string }, {}, IUser
       if (/(invalid(.)+email(.)+)/g.test(err.message)) {
         return res.status(401).json({
           msg: "Error",
-          err: "User tidak ditemukan",
+          err: "User did not found",
         });
       }
       console.log(err.message);
@@ -238,7 +245,7 @@ export const setPwd = async (req: Request<{ email: string }, {}, { pwd: string }
       if (/(invalid(.)+email(.)+)/g.test(err.message)) {
         return res.status(401).json({
           msg: "Error",
-          err: "User tidak ditemukan",
+          err: "User did not found",
         });
       }
 
@@ -266,7 +273,7 @@ export const changePwd = async (req: Request<{ email: string }, {}, { pwd: strin
       if (/(invalid(.)+email(.)+)/g.test(err.message)) {
         return res.status(401).json({
           msg: "Error",
-          err: "User tidak ditemukan",
+          err: "User did not found",
         });
       }
       console.log(err.message);
@@ -284,7 +291,7 @@ export const deletedUser = async (req: Request<IUserParams>, res: Response<IUser
     const result = await deleteUserFromAdmin(uuid);
     if (result.rowCount === 0) {
       return res.status(404).json({
-        msg: "User tidak ditemukan",
+        msg: "User did not found",
         data: [],
       });
     }
@@ -320,7 +327,7 @@ export const setImageCloud = async (req: Request<{ email: string }>, res: Respon
       if (/(invalid(.)+email(.)+)/g.test(err.message)) {
         return res.status(401).json({
           msg: "Error",
-          err: "User tidak ditemukan",
+          err: "User did not found",
         });
       }
       console.log(err.message);

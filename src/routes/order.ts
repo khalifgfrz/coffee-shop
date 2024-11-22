@@ -5,7 +5,7 @@ import { authorization } from "../middlewares/authorization";
 const orderRouter = Router();
 
 // CRUD
-orderRouter.get("/", authorization(["admin"]), getOrder);
+orderRouter.get("/", getOrder);
 
 orderRouter.get("/:uuid", authorization(), getDetailOrder);
 orderRouter.get("/get/history", authorization(), orderHistory);
