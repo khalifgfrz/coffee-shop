@@ -5,7 +5,7 @@ import cors, { CorsOptions } from "cors";
 // import multer from "multer";
 // import path from "path";
 
-let path = "./.env.local";
+let path = "./.env.production";
 // if (process.env.NODE_ENV == "production") path = "./.env.production";
 dotenv.config({ path });
 

@@ -1,12 +1,23 @@
 import { Request, Response } from "express-serve-static-core";
 
-import { getAllProduct, getOneProduct, createProduct, deleteProduct, updateOneProduct, getTotalProduct, setImageProduct } from "../repositories/product";
+import {
+  getAllProduct,
+  getOneProduct,
+  createProduct,
+  deleteProduct,
+  updateOneProduct,
+  getTotalProduct,
+  setImageProduct,
+} from "../repositories/product";
 import { IProductBody, IProductParams, IProductQuery } from "../models/product";
 import getProductLink from "../helpers/getProductLink";
 import { IProductResponse } from "../models/response";
 import { cloudinaryUploader } from "../helpers/cloudinary";
 
-export const getProduct = async (req: Request<{}, {}, {}, IProductQuery>, res: Response<IProductResponse>) => {
+export const getProduct = async (
+  req: Request<{}, {}, {}, IProductQuery>,
+  res: Response<IProductResponse>
+) => {
   try {
     const result = await getAllProduct(req.query);
     if (result.rowCount === 0) {
@@ -32,10 +43,7 @@ export const getProduct = async (req: Request<{}, {}, {}, IProductQuery>, res: R
     });
   } catch (err) {
     if (err instanceof Error) {
-      console.error("GET /product error:", err.message);
-      console.error("Stack:", err.stack);
-    } else {
-      console.error("Unknown error:", err);
+      console.log(err.message);
     }
     return res.status(500).json({
       msg: "Error",
@@ -44,7 +52,10 @@ export const getProduct = async (req: Request<{}, {}, {}, IProductQuery>, res: R
   }
 };
 
-export const getDetailProduct = async (req: Request<IProductParams>, res: Response<IProductResponse>) => {
+export const getDetailProduct = async (
+  req: Request<IProductParams>,
+  res: Response<IProductResponse>
+) => {
   const { uuid } = req.params;
   try {
     const result = await getOneProduct(uuid);
@@ -69,7 +80,10 @@ export const getDetailProduct = async (req: Request<IProductParams>, res: Respon
   }
 };
 
-export const createNewProduct = async (req: Request<{}, {}, IProductBody>, res: Response<IProductResponse>) => {
+export const createNewProduct = async (
+  req: Request<{}, {}, IProductBody>,
+  res: Response<IProductResponse>
+) => {
   const { file } = req;
   if (!file)
     return res.status(400).json({
@@ -99,7 +113,10 @@ export const createNewProduct = async (req: Request<{}, {}, IProductBody>, res: 
   }
 };
 
-export const deleteExtProduct = async (req: Request<IProductParams>, res: Response<IProductResponse>) => {
+export const deleteExtProduct = async (
+  req: Request<IProductParams>,
+  res: Response<IProductResponse>
+) => {
   const { uuid } = req.params;
   try {
     const result = await deleteProduct(uuid);
@@ -124,7 +141,10 @@ export const deleteExtProduct = async (req: Request<IProductParams>, res: Respon
   }
 };
 
-export const updateDetailProduct = async (req: Request<{ uuid: string }, {}, IProductBody>, res: Response<IProductResponse>) => {
+export const updateDetailProduct = async (
+  req: Request<{ uuid: string }, {}, IProductBody>,
+  res: Response<IProductResponse>
+) => {
   const { uuid } = req.params;
   try {
     const result = await updateOneProduct(req.body, uuid);
@@ -155,7 +175,10 @@ export const updateDetailProduct = async (req: Request<{ uuid: string }, {}, IPr
   }
 };
 
-export const setImageCloud = async (req: Request<{ uuid: string }>, res: Response<IProductResponse>) => {
+export const setImageCloud = async (
+  req: Request<{ uuid: string }>,
+  res: Response<IProductResponse>
+) => {
   const { uuid } = req.params;
   try {
     const { result, error } = await cloudinaryUploader(req, "product", uuid);
