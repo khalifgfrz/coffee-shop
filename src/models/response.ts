@@ -1,3 +1,4 @@
+import { IDataFavorite } from "./favorite";
 import { IDataOrder } from "./order";
 import { IOrderDetailsData } from "./orderDetails";
 import { IDataProduct } from "./product";
@@ -34,6 +35,10 @@ export interface IProductResponse extends IBasicResponse {
 
 export interface IPromoResponse extends IBasicResponse {
   data?: IDataPromo[];
+}
+
+export interface IFavoriteResponse extends IBasicResponse {
+  data?: IDataFavorite[];
 }
 
 export interface ISizesResponse extends IBasicResponse {

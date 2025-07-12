@@ -7,7 +7,7 @@ export interface IProductQuery {
   min_price?: number;
   max_price?: number;
   category?: string;
-  sortBy?: "alphabet" | "price" | "latest" | "oldest";
+  sortBy?: "Alphabet" | "Price" | "Latest" | "Oldest";
   page?: string;
 }
 

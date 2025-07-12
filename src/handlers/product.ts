@@ -32,7 +32,10 @@ export const getProduct = async (req: Request<{}, {}, {}, IProductQuery>, res: R
     });
   } catch (err) {
     if (err instanceof Error) {
-      console.log(err.message);
+      console.error("GET /product error:", err.message);
+      console.error("Stack:", err.stack);
+    } else {
+      console.error("Unknown error:", err);
     }
     return res.status(500).json({
       msg: "Error",

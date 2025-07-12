@@ -34,23 +34,23 @@ export const getAllProduct = (que: IProductQuery): Promise<QueryResult<IDataProd
   }
 
   switch (sortBy) {
-    case "alphabet":
+    case "Alphabet":
       query += " order by product_name asc";
       break;
-    case "price":
+    case "Price":
       query += " order by price asc";
       break;
-    case "latest":
+    case "Latest":
       query += " order by created_at desc";
       break;
-    case "oldest":
+    case "Oldest":
       query += " order by created_at asc";
       break;
   }
 
   if (page) {
     const offset = (parseInt(page) - 1) * 5;
-    query += ` limit 5 offset $${values.length + 1}`;
+    query += ` limit 6 offset $${values.length + 1}`;
     values.push(offset);
   }
   return db.query(query, values);
